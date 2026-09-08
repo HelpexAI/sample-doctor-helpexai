@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { ClinicData, Doctor, ClinicService, DoctorCategory } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function ClinicAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -289,20 +290,22 @@ export default function ClinicAdminPage() {
   // ==========================================
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#07080B] text-slate-100 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-[#0E121A] border border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-36 h-36 bg-teal-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#07080B] dark:text-slate-100 flex items-center justify-center p-4 transition-colors">
+        <div className="w-full max-w-md bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-4 right-4">
+            <ThemeToggle />
+          </div>
 
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center mx-auto mb-3">
+          <div className="text-center mb-8 mt-2">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 dark:bg-teal-500/10 dark:border-teal-500/20 dark:text-teal-400 flex items-center justify-center mx-auto mb-3">
               <Lock className="w-6 h-6" />
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">Staff Reception Portal</h1>
-            <p className="text-xs text-zinc-400 mt-1">Sign in to manage doctors, fees &amp; clinic settings</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Staff Reception Portal</h1>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">Sign in to manage doctors, fees &amp; clinic settings</p>
           </div>
 
           {authError && (
-            <div className="mb-6 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center gap-2">
+            <div className="mb-6 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 dark:text-red-400 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{authError}</span>
             </div>
@@ -310,40 +313,40 @@ export default function ClinicAdminPage() {
 
           <form onSubmit={handleLogin} className="space-y-4 text-xs">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Username</label>
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wider">Username</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. admin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3.5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:border-teal-400 transition-colors"
+                className="w-full px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5 uppercase tracking-wider">Password</label>
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1.5 uppercase tracking-wider">Password</label>
               <input
                 type="password"
                 required
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3.5 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:border-teal-400 transition-colors"
+                className="w-full px-3.5 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full py-3.5 px-4 rounded-xl bg-teal-400 hover:bg-teal-300 disabled:bg-zinc-800 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white dark:bg-teal-400 dark:hover:bg-teal-300 dark:disabled:bg-zinc-800 dark:text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-600/20 dark:shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
             >
               {isLoggingIn ? <span>Verifying Handshake...</span> : <span>Sign In to Dashboard</span>}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
-            <Link className="text-xs text-zinc-400 hover:text-white transition-colors" href="/">
+          <div className="mt-8 pt-6 border-t border-slate-200 dark:border-zinc-800/80 text-center">
+            <Link className="text-xs text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white transition-colors" href="/">
               ← Return to Public Clinic Website
             </Link>
           </div>
@@ -356,38 +359,40 @@ export default function ClinicAdminPage() {
   // VIEW 2: AUTHENTICATED ADMIN DASHBOARD
   // ==========================================
   return (
-    <div className="min-h-screen bg-[#07080B] text-slate-100 pb-28">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 dark:bg-[#07080B] dark:text-slate-100 pb-28 transition-colors">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 bg-[#0E121A]/90 backdrop-blur-md border-b border-zinc-800">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#0E121A]/90 backdrop-blur-md border-b border-slate-200 dark:border-zinc-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+            <div className="p-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-700 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20">
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+              <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span>{clinic.clinicName}</span>
-                <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-500/15 text-teal-400 border border-teal-500/30">
+                <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-500/15 dark:text-teal-400 dark:border-teal-500/30">
                   Live Sync Active
                 </span>
               </h1>
-              <p className="text-[11px] text-zinc-400">Signed in as {username}</p>
+              <p className="text-[11px] text-slate-500 dark:text-zinc-400">Signed in as {username}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-semibold text-zinc-300 hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:text-white transition-colors"
               href="/"
               target="_blank"
             >
               <span>View Public Site</span>
-              <ExternalLink className="w-3.5 h-3.5 text-teal-400" />
+              <ExternalLink className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
             </Link>
+
+            <ThemeToggle />
 
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 text-xs font-semibold transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Logout</span>
@@ -404,30 +409,30 @@ export default function ClinicAdminPage() {
           <div
             className={`mb-6 p-4 rounded-2xl border text-xs flex items-center justify-between ${
               statusMessage.type === "success"
-                ? "bg-teal-500/10 border-teal-500/30 text-teal-300"
-                : "bg-red-500/10 border-red-500/30 text-red-300"
+                ? "bg-teal-50 border-teal-200 text-teal-800 dark:bg-teal-500/10 dark:border-teal-500/30 dark:text-teal-300"
+                : "bg-red-50 border-red-200 text-red-800 dark:bg-red-500/10 dark:border-red-500/30 dark:text-red-300"
             }`}
           >
             <div className="flex items-center gap-2">
               {statusMessage.type === "success" ? (
-                <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
               )}
               <span className="font-semibold">{statusMessage.text}</span>
             </div>
-            <button onClick={() => setStatusMessage(null)} className="text-zinc-400 hover:text-white">✕</button>
+            <button onClick={() => setStatusMessage(null)} className="text-slate-400 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-white">✕</button>
           </div>
         )}
 
         {/* Tab Switcher */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-zinc-800/80 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 border-b border-slate-200 dark:border-zinc-800/80 scrollbar-none">
           <button
             onClick={() => setActiveTab("doctors")}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === "doctors"
-                ? "bg-teal-400 text-slate-950 shadow-md shadow-teal-500/20"
-                : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20 dark:bg-teal-400 dark:text-slate-950 dark:shadow-teal-500/20"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white dark:border-zinc-800 dark:shadow-none"
             }`}
           >
             <UserCheck className="w-4 h-4" />
@@ -438,8 +443,8 @@ export default function ClinicAdminPage() {
             onClick={() => setActiveTab("services")}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === "services"
-                ? "bg-teal-400 text-slate-950 shadow-md shadow-teal-500/20"
-                : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20 dark:bg-teal-400 dark:text-slate-950 dark:shadow-teal-500/20"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white dark:border-zinc-800 dark:shadow-none"
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -450,8 +455,8 @@ export default function ClinicAdminPage() {
             onClick={() => setActiveTab("categories")}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === "categories"
-                ? "bg-teal-400 text-slate-950 shadow-md shadow-teal-500/20"
-                : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20 dark:bg-teal-400 dark:text-slate-950 dark:shadow-teal-500/20"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white dark:border-zinc-800 dark:shadow-none"
             }`}
           >
             <Layers className="w-4 h-4" />
@@ -462,8 +467,8 @@ export default function ClinicAdminPage() {
             onClick={() => setActiveTab("profile")}
             className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
               activeTab === "profile"
-                ? "bg-teal-400 text-slate-950 shadow-md shadow-teal-500/20"
-                : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                ? "bg-teal-600 text-white shadow-md shadow-teal-600/20 dark:bg-teal-400 dark:text-slate-950 dark:shadow-teal-500/20"
+                : "bg-white text-slate-600 hover:text-slate-900 border border-slate-200 shadow-sm dark:bg-zinc-900 dark:text-zinc-400 dark:hover:text-white dark:border-zinc-800 dark:shadow-none"
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -476,12 +481,12 @@ export default function ClinicAdminPage() {
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-white">Doctors &amp; Consultants</h2>
-                <p className="text-xs text-zinc-400">Toggle daily on-duty status or adjust consultation charges</p>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Doctors &amp; Consultants</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Toggle daily on-duty status or adjust consultation charges</p>
               </div>
               <button
                 onClick={() => setIsNewDocModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:hover:bg-teal-300 dark:text-slate-950 font-bold text-xs shadow-md shadow-teal-600/20 dark:shadow-teal-500/20 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Doctor</span>
@@ -492,8 +497,8 @@ export default function ClinicAdminPage() {
               {clinic.doctors.map((doc) => (
                 <div
                   key={doc.id}
-                  className={`p-5 rounded-3xl bg-[#0E121A] border transition-all flex flex-col justify-between ${
-                    doc.isAvailable ? "border-zinc-800" : "border-red-500/30 bg-red-950/5"
+                  className={`p-5 rounded-3xl bg-white border transition-all flex flex-col justify-between shadow-sm dark:bg-[#0E121A] ${
+                    doc.isAvailable ? "border-slate-200 dark:border-zinc-800" : "border-red-300 bg-red-50/20 dark:border-red-500/30 dark:bg-red-950/5"
                   }`}
                 >
                   <div>
@@ -502,40 +507,40 @@ export default function ClinicAdminPage() {
                         <img
                           src={doc.avatar}
                           alt={doc.name}
-                          className="w-12 h-12 rounded-xl object-cover border border-zinc-700 shrink-0"
+                          className="w-12 h-12 rounded-xl object-cover border border-slate-200 dark:border-zinc-700 shrink-0"
                         />
                         <div className="min-w-0">
-                          <h3 className="text-sm font-bold text-white truncate">{doc.name}</h3>
-                          <p className="text-xs text-teal-400">{doc.specialization}</p>
-                          <p className="text-[10px] text-zinc-500">{doc.qualification}</p>
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">{doc.name}</h3>
+                          <p className="text-xs text-teal-700 dark:text-teal-400 font-semibold">{doc.specialization}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-zinc-500">{doc.qualification}</p>
                         </div>
                       </div>
 
                       <button
                         onClick={() => handleDeleteDoctor(doc.id)}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-zinc-800 transition-colors"
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:text-zinc-500 dark:hover:text-red-400 dark:hover:bg-zinc-800 transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
-                    <div className="space-y-3 py-3 border-y border-zinc-800/80 text-xs">
+                    <div className="space-y-3 py-3 border-y border-slate-100 dark:border-zinc-800/80 text-xs">
                       <div>
-                        <span className="text-zinc-500 block mb-1">Consultation Fee (PKR):</span>
+                        <span className="text-slate-500 dark:text-zinc-500 block mb-1">Consultation Fee (PKR):</span>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">Rs.</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500">Rs.</span>
                           <input
                             type="text"
                             value={doc.fee}
                             onChange={(e) => handleDoctorFeeChange(doc.id, e.target.value)}
-                            className="w-full pl-10 pr-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white font-bold focus:outline-none focus:border-teal-400"
+                            className="w-full pl-10 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-bold focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-zinc-500 block">Schedule:</span>
-                        <p className="text-xs text-zinc-300 font-medium">{doc.timing}</p>
+                        <span className="text-slate-500 dark:text-zinc-500 block">Schedule:</span>
+                        <p className="text-xs text-slate-800 dark:text-zinc-300 font-medium">{doc.timing}</p>
                       </div>
                     </div>
                   </div>
@@ -545,8 +550,8 @@ export default function ClinicAdminPage() {
                       onClick={() => handleToggleDoctorAvailability(doc.id)}
                       className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                         doc.isAvailable
-                          ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/25"
-                          : "bg-red-500/15 text-red-400 border border-red-500/30 hover:bg-red-500/25"
+                          ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100/80 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30 dark:hover:bg-emerald-500/25"
+                          : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100/80 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/25"
                       }`}
                     >
                       {doc.isAvailable ? (
@@ -573,12 +578,12 @@ export default function ClinicAdminPage() {
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className="text-xl font-bold text-white">Clinical Procedures &amp; Services</h2>
-                <p className="text-xs text-zinc-400">Manage treatment estimates and procedural information</p>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Clinical Procedures &amp; Services</h2>
+                <p className="text-xs text-slate-500 dark:text-zinc-400">Manage treatment estimates and procedural information</p>
               </div>
               <button
                 onClick={() => setIsNewServiceModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs shadow-md shadow-teal-500/20 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:hover:bg-teal-300 dark:text-slate-950 font-bold text-xs shadow-md shadow-teal-600/20 dark:shadow-teal-500/20 transition-all"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Procedure</span>
@@ -589,28 +594,28 @@ export default function ClinicAdminPage() {
               {(clinic.services || []).map((srv) => (
                 <div
                   key={srv.id}
-                  className="p-5 rounded-3xl bg-[#0E121A] border border-zinc-800 flex flex-col justify-between"
+                  className="p-5 rounded-3xl bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 shadow-sm flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20">
                         {srv.category}
                       </span>
                       <button
                         onClick={() => handleDeleteService(srv.id)}
-                        className="p-1 rounded text-zinc-500 hover:text-red-400 hover:bg-zinc-800"
+                        className="p-1 rounded text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:text-zinc-500 dark:hover:text-red-400 dark:hover:bg-zinc-800"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
 
-                    <h3 className="text-sm font-bold text-white">{srv.title}</h3>
-                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">{srv.description}</p>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">{srv.title}</h3>
+                    <p className="text-xs text-slate-600 dark:text-zinc-400 mt-1 line-clamp-2">{srv.description}</p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs">
-                    <span className="text-zinc-500">Est: <strong className="text-teal-300">{srv.priceEstimate}</strong></span>
-                    <span className="text-zinc-400 font-medium flex items-center gap-1">
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
+                    <span className="text-slate-500 dark:text-zinc-500">Est: <strong className="text-teal-700 dark:text-teal-300">{srv.priceEstimate}</strong></span>
+                    <span className="text-slate-500 dark:text-zinc-400 font-medium flex items-center gap-1">
                       <Clock className="w-3 h-3" /> {srv.duration}
                     </span>
                   </div>
@@ -624,8 +629,8 @@ export default function ClinicAdminPage() {
         {activeTab === "categories" && (
           <div className="max-w-2xl space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-white">Specialty Departments</h2>
-              <p className="text-xs text-zinc-400">Categorize doctors on your patient booking storefront</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Specialty Departments</h2>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">Categorize doctors on your patient booking storefront</p>
             </div>
 
             <form onSubmit={handleCreateCategory} className="flex gap-3">
@@ -635,27 +640,27 @@ export default function ClinicAdminPage() {
                 placeholder="e.g. Orthodontics, Physiotherapy"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-white focus:outline-none focus:border-teal-400"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-400 shadow-sm focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:hover:bg-teal-300 dark:text-slate-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Category</span>
               </button>
             </form>
 
-            <div className="bg-[#0E121A] border border-zinc-800 rounded-2xl divide-y divide-zinc-800/80">
+            <div className="bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 rounded-2xl divide-y divide-slate-100 dark:divide-zinc-800/80 shadow-sm">
               {clinic.categories.map((cat) => (
                 <div key={cat.id} className="p-4 flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-white">{cat.name}</h4>
-                    <span className="text-[10px] text-zinc-500 font-mono">ID: {cat.id}</span>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">{cat.name}</h4>
+                    <span className="text-[10px] text-slate-400 dark:text-zinc-500 font-mono">ID: {cat.id}</span>
                   </div>
                   <button
                     onClick={() => handleDeleteCategory(cat.id)}
-                    className="p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-zinc-800"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-slate-100 dark:text-zinc-500 dark:hover:text-red-400 dark:hover:bg-zinc-800"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -669,72 +674,72 @@ export default function ClinicAdminPage() {
         {activeTab === "profile" && (
           <div className="max-w-3xl space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-white">Clinic Details &amp; Emergency Banner</h2>
-              <p className="text-xs text-zinc-400">Update reception contact channels, address, and alert notices</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">Clinic Details &amp; Emergency Banner</h2>
+              <p className="text-xs text-slate-500 dark:text-zinc-400">Update reception contact channels, address, and alert notices</p>
             </div>
 
-            <div className="p-6 rounded-3xl bg-[#0E121A] border border-zinc-800 space-y-4 text-xs">
+            <div className="p-6 rounded-3xl bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 shadow-sm space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">Clinic Name</label>
+                  <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Clinic Name</label>
                   <input
                     type="text"
                     value={clinic.clinicName}
                     onChange={(e) => setClinic({ ...clinic, clinicName: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">Tagline / Subtitle</label>
+                  <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Tagline / Subtitle</label>
                   <input
                     type="text"
                     value={clinic.tagline}
                     onChange={(e) => setClinic({ ...clinic, tagline: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">Hotline / Landline Phone</label>
+                  <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Hotline / Landline Phone</label>
                   <input
                     type="text"
                     value={clinic.hotline}
                     onChange={(e) => setClinic({ ...clinic, hotline: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-zinc-300 mb-1">WhatsApp Booking Number (with country code)</label>
+                  <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">WhatsApp Booking Number (with country code)</label>
                   <input
                     type="text"
                     value={clinic.whatsappNumber}
                     onChange={(e) => setClinic({ ...clinic, whatsappNumber: e.target.value })}
-                    className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">Physical Address &amp; Sector</label>
+                <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Physical Address &amp; Sector</label>
                 <input
                   type="text"
                   value={clinic.address}
                   onChange={(e) => setClinic({ ...clinic, address: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1">
+                <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                   Emergency / Triage Top Banner Notice (Leave empty to hide)
                 </label>
                 <input
                   type="text"
                   value={clinic.emergencyNotice}
                   onChange={(e) => setClinic({ ...clinic, emergencyNotice: e.target.value })}
-                  className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
             </div>
@@ -744,17 +749,17 @@ export default function ClinicAdminPage() {
       </main>
 
       {/* STICKY BOTTOM SAVE BAR */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-[#0E121A]/95 backdrop-blur-md border-t border-zinc-800 p-4">
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#0E121A]/95 backdrop-blur-md border-t border-slate-200 dark:border-zinc-800 p-4 transition-colors">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
-            <ShieldCheck className="w-4 h-4 text-teal-400" />
+          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
+            <ShieldCheck className="w-4 h-4 text-teal-600 dark:text-teal-400" />
             <span>All changes are cached locally until published to Cloudflare Edge.</span>
           </div>
 
           <button
             onClick={handleSaveToEdge}
             disabled={isSaving}
-            className="w-full sm:w-auto ml-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-teal-400 hover:bg-teal-300 disabled:bg-zinc-800 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-500/25 transition-all hover:-translate-y-0.5"
+            className="w-full sm:w-auto ml-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white dark:bg-teal-400 dark:hover:bg-teal-300 dark:disabled:bg-zinc-800 dark:text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-teal-600/20 dark:shadow-teal-500/25 transition-all hover:-translate-y-0.5"
           >
             <Save className="w-4 h-4" />
             <span>{isSaving ? "Synchronizing with Cloudflare..." : "Push Changes Live to Cloudflare"}</span>
@@ -764,41 +769,41 @@ export default function ClinicAdminPage() {
 
       {/* MODAL: ADD DOCTOR */}
       {isNewDocModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0E121A] border border-zinc-800 rounded-3xl w-full max-w-md p-6 shadow-2xl">
-            <h3 className="text-base font-bold text-white mb-4">Add New Consultant / Doctor</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm">
+          <div className="bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-slate-900 dark:text-white">
+            <h3 className="text-base font-bold mb-4">Add New Consultant / Doctor</h3>
             <form onSubmit={handleCreateDoctor} className="space-y-3 text-xs">
               <div>
-                <label className="block text-zinc-400 mb-1">Doctor Name *</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Doctor Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Dr. Usman Khalid"
                   value={newDoc.name}
                   onChange={(e) => setNewDoc({ ...newDoc, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Specialization *</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Specialization *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Consultant Orthodontist"
                   value={newDoc.specialization}
                   onChange={(e) => setNewDoc({ ...newDoc, specialization: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-zinc-400 mb-1">Department</label>
+                  <label className="block text-slate-600 dark:text-zinc-400 mb-1">Department</label>
                   <select
                     value={newDoc.categoryId}
                     onChange={(e) => setNewDoc({ ...newDoc, categoryId: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   >
                     {clinic.categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -806,37 +811,37 @@ export default function ClinicAdminPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-zinc-400 mb-1">Fee (PKR) *</label>
+                  <label className="block text-slate-600 dark:text-zinc-400 mb-1">Fee (PKR) *</label>
                   <input
                     type="text"
                     required
                     placeholder="2500"
                     value={newDoc.fee}
                     onChange={(e) => setNewDoc({ ...newDoc, fee: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Qualifications</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Qualifications</label>
                 <input
                   type="text"
                   placeholder="e.g. BDS, FCPS, RDS"
                   value={newDoc.qualification}
                   onChange={(e) => setNewDoc({ ...newDoc, qualification: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Clinic Timings</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Clinic Timings</label>
                 <input
                   type="text"
                   placeholder="e.g. 5:00 PM - 9:00 PM (Mon - Fri)"
                   value={newDoc.timing}
                   onChange={(e) => setNewDoc({ ...newDoc, timing: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
@@ -844,13 +849,13 @@ export default function ClinicAdminPage() {
                 <button
                   type="button"
                   onClick={() => setIsNewDocModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700"
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 font-bold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-teal-400 text-slate-950 font-bold hover:bg-teal-300"
+                  className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:text-slate-950 dark:hover:bg-teal-300 font-bold transition-colors"
                 >
                   Save Doctor
                 </button>
@@ -862,54 +867,54 @@ export default function ClinicAdminPage() {
 
       {/* MODAL: ADD SERVICE */}
       {isNewServiceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#0E121A] border border-zinc-800 rounded-3xl w-full max-w-md p-6 shadow-2xl">
-            <h3 className="text-base font-bold text-white mb-4">Add Clinical Procedure / Service</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm">
+          <div className="bg-white border border-slate-200 dark:bg-[#0E121A] dark:border-zinc-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-slate-900 dark:text-white">
+            <h3 className="text-base font-bold mb-4">Add Clinical Procedure / Service</h3>
             <form onSubmit={handleCreateService} className="space-y-3 text-xs">
               <div>
-                <label className="block text-zinc-400 mb-1">Procedure Title *</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Procedure Title *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Root Canal Treatment (Molar)"
                   value={newService.title}
                   onChange={(e) => setNewService({ ...newService, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-zinc-400 mb-1">Category Tag</label>
+                  <label className="block text-slate-600 dark:text-zinc-400 mb-1">Category Tag</label>
                   <input
                     type="text"
                     placeholder="Dental Surgery"
                     value={newService.category}
                     onChange={(e) => setNewService({ ...newService, category: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
                 <div>
-                  <label className="block text-zinc-400 mb-1">Price Estimate *</label>
+                  <label className="block text-slate-600 dark:text-zinc-400 mb-1">Price Estimate *</label>
                   <input
                     type="text"
                     required
                     placeholder="Rs. 18,000"
                     value={newService.priceEstimate}
                     onChange={(e) => setNewService({ ...newService, priceEstimate: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-zinc-400 mb-1">Description</label>
+                <label className="block text-slate-600 dark:text-zinc-400 mb-1">Description</label>
                 <textarea
                   rows={2}
                   placeholder="Brief explanation of procedure..."
                   value={newService.description}
                   onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400 resize-none"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white focus:outline-none focus:border-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 resize-none"
                 />
               </div>
 
@@ -917,13 +922,13 @@ export default function ClinicAdminPage() {
                 <button
                   type="button"
                   onClick={() => setIsNewServiceModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-zinc-800 text-zinc-300 font-bold hover:bg-zinc-700"
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 font-bold transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-teal-400 text-slate-950 font-bold hover:bg-teal-300"
+                  className="flex-1 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white dark:bg-teal-400 dark:text-slate-950 dark:hover:bg-teal-300 font-bold transition-colors"
                 >
                   Save Procedure
                 </button>

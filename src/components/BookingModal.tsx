@@ -78,41 +78,41 @@ _Sent via Helpex Clinic Digital Booking System_`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#0D1117] border border-zinc-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 dark:bg-black/85 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white border border-slate-200 dark:bg-[#0D1117] dark:border-zinc-800 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl relative my-8 text-slate-900 dark:text-white transition-colors">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/60">
+        <div className="p-5 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between bg-slate-50 dark:bg-zinc-900/60">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-400">
               Direct Reception Booking
             </span>
-            <h3 className="text-lg font-bold text-white mt-0.5">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
               Appointment with {doctor.name}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/80 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Doctor Quick Snapshot */}
-        <div className="p-4 bg-[#141A23] border-b border-zinc-800/80 flex items-center gap-3">
+        <div className="p-4 bg-teal-50/50 border-b border-teal-100/70 dark:bg-[#141A23] dark:border-zinc-800/80 flex items-center gap-3">
           <img
             src={doctor.avatar}
             alt={doctor.name}
             className="w-12 h-12 rounded-xl object-cover border border-teal-500/30"
           />
           <div className="flex-1 min-w-0">
-            <h4 className="text-sm font-bold text-white truncate">{doctor.name}</h4>
-            <p className="text-xs text-teal-400 font-medium">{doctor.specialization}</p>
-            <p className="text-[11px] text-zinc-400 mt-0.5">{doctor.timing}</p>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{doctor.name}</h4>
+            <p className="text-xs text-teal-700 dark:text-teal-400 font-medium">{doctor.specialization}</p>
+            <p className="text-[11px] text-slate-500 dark:text-zinc-400 mt-0.5">{doctor.timing}</p>
           </div>
           <div className="text-right">
-            <span className="text-xs text-zinc-400 block">Fee</span>
-            <span className="text-sm font-extrabold text-white">Rs. {doctor.fee}</span>
+            <span className="text-xs text-slate-500 dark:text-zinc-400 block font-medium">Fee</span>
+            <span className="text-sm font-extrabold text-slate-900 dark:text-white">Rs. {doctor.fee}</span>
           </div>
         </div>
 
@@ -120,7 +120,7 @@ _Sent via Helpex Clinic Digital Booking System_`;
         <form onSubmit={handleBookingSubmit} className="p-5 space-y-4 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Patient Full Name *
               </label>
               <input
@@ -129,11 +129,11 @@ _Sent via Helpex Clinic Digital Booking System_`;
                 placeholder="e.g. Arslan Tiwana"
                 value={patientName}
                 onChange={(e) => setPatientName(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-teal-400 transition-colors"
               />
             </div>
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Contact Phone / WhatsApp *
               </label>
               <input
@@ -142,28 +142,28 @@ _Sent via Helpex Clinic Digital Booking System_`;
                 placeholder="e.g. 0300 1234567"
                 value={patientPhone}
                 onChange={(e) => setPatientPhone(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-teal-400 transition-colors"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">Age</label>
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Age</label>
               <input
                 type="number"
                 placeholder="e.g. 28"
                 value={patientAge}
                 onChange={(e) => setPatientAge(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-teal-400 transition-colors"
               />
             </div>
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">Gender</label>
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">Gender</label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -171,22 +171,22 @@ _Sent via Helpex Clinic Digital Booking System_`;
               </select>
             </div>
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">
-                MR / File # <span className="text-zinc-500">(Opt)</span>
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
+                MR / File # <span className="text-slate-400 dark:text-zinc-500">(Opt)</span>
               </label>
               <input
                 type="text"
                 placeholder="e.g. MR-1042"
                 value={mrNumber}
                 onChange={(e) => setMrNumber(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-teal-400 transition-colors"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Preferred Date *
               </label>
               <input
@@ -194,18 +194,18 @@ _Sent via Helpex Clinic Digital Booking System_`;
                 required
                 value={preferredDate}
                 onChange={(e) => setPreferredDate(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
               />
             </div>
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
                 Preferred Time Slot *
               </label>
               <select
                 required
                 value={preferredSlot}
                 onChange={(e) => setPreferredSlot(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400"
+                className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:focus:border-teal-400 transition-colors"
               >
                 <option value="">Select a time slot</option>
                 {timeSlots.map((slot, idx) => (
@@ -218,7 +218,7 @@ _Sent via Helpex Clinic Digital Booking System_`;
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-300 mb-1">
+            <label className="block font-semibold text-slate-700 dark:text-zinc-300 mb-1">
               Symptoms / Reason for Visit (Optional)
             </label>
             <textarea
@@ -226,20 +226,20 @@ _Sent via Helpex Clinic Digital Booking System_`;
               placeholder="e.g. Severe toothache on lower left side, bleeding gums..."
               value={symptoms}
               onChange={(e) => setSymptoms(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white focus:outline-none focus:border-teal-400 resize-none"
+              className="w-full px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 dark:bg-zinc-900 dark:border-zinc-800 dark:text-white dark:placeholder-zinc-500 dark:focus:border-teal-400 resize-none transition-colors"
             />
           </div>
 
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-teal-400 hover:bg-teal-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-sm shadow-lg shadow-teal-600/20 dark:bg-teal-400 dark:hover:bg-teal-300 dark:text-slate-950 dark:shadow-teal-500/20 transition-all flex items-center justify-center gap-2"
             >
-              <span>Confirm & Dispatch via WhatsApp</span>
+              <span>Confirm &amp; Dispatch via WhatsApp</span>
               <CheckCircle2 className="w-4 h-4" />
             </button>
-            <p className="text-center text-[10px] text-zinc-500 mt-2 flex items-center justify-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
+            <p className="text-center text-[10px] text-slate-500 dark:text-zinc-500 mt-2 flex items-center justify-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               <span>Instant confirmation sent directly to clinic reception desk</span>
             </p>
           </div>

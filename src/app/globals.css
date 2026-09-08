@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 :root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
   --background: #07080b;
   --foreground: #f1f5f9;
 }
@@ -10,4 +15,5 @@
 body {
   color: var(--foreground);
   background: var(--background);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
