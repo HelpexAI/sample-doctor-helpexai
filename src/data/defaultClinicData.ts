@@ -23,6 +23,12 @@ export const defaultClinicData: ClinicData = {
       categoryId: "dental",
       experience: "12 Years",
       fee: "2500",
+      schedule: {
+        days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        startTime: "16:00",
+        endTime: "21:00"
+      },
+      timingDisplay: "Mon - Sat (4:00 PM - 9:00 PM)",
       timing: "4:00 PM - 9:00 PM (Mon - Sat)",
       avatar: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
       isAvailable: true
@@ -35,6 +41,12 @@ export const defaultClinicData: ClinicData = {
       categoryId: "aesthetics",
       experience: "8 Years",
       fee: "3000",
+      schedule: {
+        days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        startTime: "14:00",
+        endTime: "19:00"
+      },
+      timingDisplay: "Mon - Fri (2:00 PM - 7:00 PM)",
       timing: "2:00 PM - 7:00 PM (Mon - Fri)",
       avatar: "https://images.unsplash.com/photo-1594824813593-906560bc9f1c?w=400&q=80",
       isAvailable: true
@@ -47,6 +59,12 @@ export const defaultClinicData: ClinicData = {
       categoryId: "general",
       experience: "14 Years",
       fee: "2000",
+      schedule: {
+        days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        startTime: "10:00",
+        endTime: "15:00"
+      },
+      timingDisplay: "Mon - Sat (10:00 AM - 3:00 PM)",
       timing: "10:00 AM - 3:00 PM (Mon - Sat)",
       avatar: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&q=80",
       isAvailable: true
@@ -59,6 +77,12 @@ export const defaultClinicData: ClinicData = {
       categoryId: "dental",
       experience: "9 Years",
       fee: "2800",
+      schedule: {
+        days: ["Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        startTime: "17:00",
+        endTime: "21:00"
+      },
+      timingDisplay: "Tue - Sun (5:00 PM - 9:00 PM)",
       timing: "5:00 PM - 9:00 PM (Tue - Sun)",
       avatar: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80",
       isAvailable: true

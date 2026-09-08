@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { ClinicData, Doctor } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
+import { getDoctorLiveStatus } from "@/utils/doctorStatus";
 import BookingModal from "@/components/BookingModal";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -205,71 +206,83 @@ export default function ClinicStorefront() {
       {/* 3. Doctors Grid */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDoctors.map((doc) => (
-            <div
-              key={doc.id}
-              className={`rounded-3xl p-6 transition-all flex flex-col justify-between ${
-                doc.isAvailable
-                  ? "bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:border-amber-500/40 dark:bg-[#1C1917] dark:border-stone-800 dark:hover:border-amber-500/40 dark:shadow-black/40"
-                  : "bg-stone-100/70 border border-stone-200/60 opacity-60 dark:bg-[#1C1917] dark:border-stone-800/60 dark:opacity-60"
-              }`}
-            >
-              <div>
-                <div className="flex items-start gap-4 mb-4">
-                  <img
-                    src={doc.avatar}
-                    alt={doc.name}
-                    className="w-16 h-16 rounded-2xl object-cover border border-stone-200 dark:border-stone-700/80 shrink-0"
-                  />
-                  <div className="min-w-0">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                      {doc.specialization}
+          {filteredDoctors.map((doc) => {
+            const status = getDoctorLiveStatus(doc);
+            return (
+              <div
+                key={doc.id}
+                className={`rounded-3xl p-6 transition-all flex flex-col justify-between ${
+                  status.canBook
+                    ? "bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:border-amber-500/40 dark:bg-[#1C1917] dark:border-stone-800 dark:hover:border-amber-500/40 dark:shadow-black/40"
+                    : "bg-stone-100/70 border border-stone-200/60 opacity-75 dark:bg-[#1C1917] dark:border-stone-800/60 dark:opacity-60"
+                }`}
+              >
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-start gap-3.5 min-w-0">
+                      <img
+                        src={doc.avatar}
+                        alt={doc.name}
+                        className="w-16 h-16 rounded-2xl object-cover border border-stone-200 dark:border-stone-700/80 shrink-0"
+                      />
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                          {doc.specialization}
+                        </span>
+                        <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate mt-0.5">
+                          {doc.name}
+                        </h3>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 font-medium truncate">
+                          {doc.qualification}
+                        </p>
+                      </div>
+                    </div>
+                    <span
+                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${status.badgeClass}`}
+                    >
+                      {status.badgeText}
                     </span>
-                    <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate mt-0.5">
-                      {doc.name}
-                    </h3>
-                    <p className="text-xs text-stone-500 dark:text-stone-400 font-medium">
-                      {doc.qualification}
-                    </p>
+                  </div>
+
+                  <div className="space-y-2 py-3 px-3.5 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-transparent dark:border-stone-800/80 dark:border-y dark:rounded-none dark:px-0 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-stone-500 dark:text-stone-400">Experience:</span>
+                      <span className="font-semibold text-stone-800 dark:text-stone-200">{doc.experience}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-stone-500 dark:text-stone-400">Consultation Fee:</span>
+                      <span className="font-black text-amber-700 dark:text-amber-400">Rs. {doc.fee}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-stone-500 dark:text-stone-400">Timing:</span>
+                      <span className="font-medium text-stone-800 dark:text-stone-200 text-right">
+                        {doc.timingDisplay || doc.timing || (doc.schedule ? `${doc.schedule.days.join(", ")} (${doc.schedule.startTime} - ${doc.schedule.endTime})` : "Schedule not specified")}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="space-y-2 py-3 px-3.5 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-transparent dark:border-stone-800/80 dark:border-y dark:rounded-none dark:px-0 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-stone-500 dark:text-stone-400">Experience:</span>
-                    <span className="font-semibold text-stone-800 dark:text-stone-200">{doc.experience}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-stone-500 dark:text-stone-400">Consultation Fee:</span>
-                    <span className="font-black text-amber-700 dark:text-amber-400">Rs. {doc.fee}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-stone-500 dark:text-stone-400">Timing:</span>
-                    <span className="font-medium text-stone-800 dark:text-stone-200 text-right">{doc.timing}</span>
-                  </div>
+                <div className="mt-6">
+                  {status.canBook ? (
+                    <button
+                      onClick={() => handleOpenBooking(doc)}
+                      className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      <span>Book Appointment</span>
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed border border-stone-300 dark:border-stone-700/50"
+                    >
+                      Unavailable (Emergency Off Duty)
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <div className="mt-6">
-                {doc.isAvailable ? (
-                  <button
-                    onClick={() => handleOpenBooking(doc)}
-                    className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    <span>Book Appointment</span>
-                  </button>
-                ) : (
-                  <button
-                    disabled
-                    className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed"
-                  >
-                    Currently Off Duty
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filteredDoctors.length === 0 && (

@@ -1,3 +1,9 @@
+export interface DoctorSchedule {
+  days: string[];          // e.g. ["Mon", "Tue", "Wed", "Thu", "Fri"]
+  startTime: string;       // 24-hour format: "16:00"
+  endTime: string;         // 24-hour format: "21:00"
+}
+
 export interface Doctor {
   id: string;
   name: string;
@@ -6,9 +12,11 @@ export interface Doctor {
   categoryId: string;
   experience: string;
   fee: string;
-  timing: string;
+  schedule?: DoctorSchedule;
+  timingDisplay?: string;  // Human-readable: "Mon - Fri (4:00 PM - 9:00 PM)"
+  timing?: string;         // Fallback legacy field
   avatar: string;
-  isAvailable: boolean;
+  isAvailable: boolean;    // Manual emergency toggle: false = forced Off Duty
 }
 
 export interface ClinicService {

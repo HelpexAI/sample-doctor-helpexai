@@ -63,7 +63,7 @@ export default function BookingModal({
 🗓 *APPOINTMENT PREFERENCE:*
 • *Date:* ${preferredDate}
 • *Preferred Slot:* ${preferredSlot}
-• *Doctor Schedule:* ${doctor.timing}
+• *Doctor Schedule:* ${doctor.timingDisplay || doctor.timing || "Contact reception for slots"}
 
 🩺 *SYMPTOMS / REASON FOR VISIT:*
 ${symptoms.trim() ? symptoms.trim() : "Routine consultation / Check-up"}
@@ -109,7 +109,7 @@ _Sent via Helpex Clinic Digital Booking System_`;
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">{doctor.name}</h4>
             <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">{doctor.specialization}</p>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{doctor.timing}</p>
+            <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">{doctor.timingDisplay || doctor.timing}</p>
           </div>
           <div className="text-right">
             <span className="text-xs text-stone-500 dark:text-stone-400 block font-medium">Fee</span>

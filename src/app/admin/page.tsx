@@ -23,8 +23,11 @@ import {
 } from "lucide-react";
 import { ClinicData, Doctor, ClinicService, DoctorCategory } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
+import { formatTime12h } from "@/utils/doctorStatus";
 import ThemeToggle from "@/components/ThemeToggle";
 import ClinicQRModal from "@/components/admin/ClinicQRModal";
+
+const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function ClinicAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -47,6 +50,16 @@ export default function ClinicAdminPage() {
 
   // Modal State for New Doctor
   const [isNewDocModalOpen, setIsNewDocModalOpen] = useState<boolean>(false);
+  const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
+  const [startTime, setStartTime] = useState<string>("16:00");
+  const [endTime, setEndTime] = useState<string>("21:00");
+
+  const toggleDay = (day: string) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
   const [newDoc, setNewDoc] = useState<Doctor>({
     id: "",
     name: "",
@@ -210,10 +223,25 @@ export default function ClinicAdminPage() {
       alert("Please fill required fields (Name, Specialization, Fee).");
       return;
     }
+    if (selectedDays.length === 0) {
+      alert("Please select at least one consultation day.");
+      return;
+    }
+
+    const timingString = `${selectedDays.join(", ")} (${formatTime12h(startTime)} - ${formatTime12h(endTime)})`;
+
     const createdDoc: Doctor = {
       ...newDoc,
       id: "doc-" + Date.now(),
       categoryId: newDoc.categoryId || (clinic.categories[0]?.id || "general"),
+      schedule: {
+        days: selectedDays,
+        startTime: startTime,
+        endTime: endTime,
+      },
+      timingDisplay: timingString,
+      timing: timingString,
+      isAvailable: true,
     };
     setClinic((prev) => ({
       ...prev,
@@ -232,6 +260,9 @@ export default function ClinicAdminPage() {
       avatar: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
       isAvailable: true,
     });
+    setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
+    setStartTime("16:00");
+    setEndTime("21:00");
   };
 
   const handleCreateCategory = (e: React.FormEvent) => {
@@ -554,7 +585,9 @@ export default function ClinicAdminPage() {
 
                       <div>
                         <span className="text-stone-500 dark:text-stone-400 block">Schedule:</span>
-                        <p className="text-xs text-stone-800 dark:text-stone-300 font-medium">{doc.timing}</p>
+                        <p className="text-xs text-stone-800 dark:text-stone-300 font-medium">
+                          {doc.timingDisplay || doc.timing || (doc.schedule ? `${doc.schedule.days.join(", ")} (${formatTime12h(doc.schedule.startTime)} - ${formatTime12h(doc.schedule.endTime)})` : "Not set")}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -858,14 +891,62 @@ export default function ClinicAdminPage() {
               </div>
 
               <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Clinic Timings</label>
-                <input
-                  type="text"
-                  placeholder="e.g. 5:00 PM - 9:00 PM (Mon - Fri)"
-                  value={newDoc.timing}
-                  onChange={(e) => setNewDoc({ ...newDoc, timing: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
-                />
+                <label className="block text-stone-600 dark:text-stone-400 mb-1.5 font-medium">
+                  Consultation Days * ({selectedDays.length} selected)
+                </label>
+                <div className="flex flex-wrap gap-1.5">
+                  {ALL_DAYS.map((day) => {
+                    const isSelected = selectedDays.includes(day);
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleDay(day)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          isSelected
+                            ? "bg-amber-500 text-stone-950 shadow-sm shadow-amber-900/20"
+                            : "bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 border border-stone-200 dark:border-stone-800"
+                        }`}
+                      >
+                        {day}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">
+                    End Time *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-xl bg-stone-100/80 dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 text-[11px] text-stone-600 dark:text-stone-400">
+                <span className="font-semibold text-stone-700 dark:text-stone-300">Schedule Preview: </span>
+                {selectedDays.length > 0
+                  ? `${selectedDays.join(", ")} (${formatTime12h(startTime)} - ${formatTime12h(endTime)})`
+                  : "Please select at least one day"}
               </div>
 
               <div className="flex gap-2 pt-3">
