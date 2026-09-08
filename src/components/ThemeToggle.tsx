@@ -14,7 +14,6 @@ export default function ThemeToggle() {
       setTheme("dark");
       document.documentElement.classList.add("dark");
     } else {
-      // Default to light theme
       setTheme("light");
       document.documentElement.classList.remove("dark");
     }
@@ -34,7 +33,7 @@ export default function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800" />
+      <div className="w-9 h-9 rounded-xl bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-800" />
     );
   }
 
@@ -43,11 +42,11 @@ export default function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
-      className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-amber-400 border border-slate-200 dark:border-zinc-800 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-teal-500/50"
+      className="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 dark:text-amber-400 border border-stone-200 dark:border-stone-800 transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-amber-500/50"
       title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
     >
       {theme === "light" ? (
-        <Moon className="w-4 h-4 text-slate-700 hover:text-slate-900 transition-transform hover:-rotate-12" />
+        <Moon className="w-4 h-4 text-stone-700 hover:text-stone-900 transition-transform hover:-rotate-12" />
       ) : (
         <Sun className="w-4 h-4 text-amber-400 hover:text-amber-300 transition-transform hover:rotate-45" />
       )}
