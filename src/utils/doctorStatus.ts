@@ -46,6 +46,14 @@ export function getDoctorLiveStatus(doctor: Doctor): StatusResult {
   const worksToday = doctor.schedule.days.includes(currentDay);
 
   if (!worksToday) {
+    if (doctor.onlyAvailableInSlot) {
+      return {
+        isOpenNow: false,
+        badgeText: "Unavailable Today",
+        badgeClass: "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30",
+        canBook: false,
+      };
+    }
     return {
       isOpenNow: false,
       badgeText: `Next: ${doctor.schedule.days.join(", ")}`,
@@ -69,6 +77,14 @@ export function getDoctorLiveStatus(doctor: Doctor): StatusResult {
       canBook: true,
     };
   } else if (currentMinutes < startTotalMinutes) {
+    if (doctor.onlyAvailableInSlot) {
+      return {
+        isOpenNow: false,
+        badgeText: `Unavailable (Starts ${formatTime12h(doctor.schedule.startTime)})`,
+        badgeClass: "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30",
+        canBook: false,
+      };
+    }
     return {
       isOpenNow: false,
       badgeText: `Starts at ${formatTime12h(doctor.schedule.startTime)}`,
@@ -76,6 +92,14 @@ export function getDoctorLiveStatus(doctor: Doctor): StatusResult {
       canBook: true,
     };
   } else {
+    if (doctor.onlyAvailableInSlot) {
+      return {
+        isOpenNow: false,
+        badgeText: "Unavailable (Shift Ended)",
+        badgeClass: "bg-red-500/15 text-red-600 dark:text-red-400 border border-red-500/30",
+        canBook: false,
+      };
+    }
     return {
       isOpenNow: false,
       badgeText: "Shift Ended for Today",

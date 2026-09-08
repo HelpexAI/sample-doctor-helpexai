@@ -72,6 +72,8 @@ export default function ClinicAdminPage() {
     categoryId: "",
     experience: "",
     fee: "",
+    gender: "male",
+    onlyAvailableInSlot: false,
     timing: "",
     avatar: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
     isAvailable: true,
@@ -219,6 +221,8 @@ export default function ClinicAdminPage() {
       categoryId: clinic.categories[0]?.id || "",
       experience: "",
       fee: "",
+      gender: "male",
+      onlyAvailableInSlot: false,
       timing: "",
       avatar: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
       isAvailable: true,
@@ -239,8 +243,10 @@ export default function ClinicAdminPage() {
       categoryId: doc.categoryId || clinic.categories[0]?.id || "",
       experience: doc.experience || "",
       fee: doc.fee,
+      gender: doc.gender || "male",
+      onlyAvailableInSlot: Boolean(doc.onlyAvailableInSlot),
       timing: doc.timing || "",
-      avatar: doc.avatar || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
+      avatar: doc.avatar || (doc.gender === "female" ? "https://images.unsplash.com/photo-1594824813593-906560bc9f1c?w=400&q=80" : "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80"),
       isAvailable: doc.isAvailable,
     });
     setSelectedDays(
@@ -331,8 +337,14 @@ export default function ClinicAdminPage() {
               specialization: newDoc.specialization.trim(),
               categoryId: newDoc.categoryId || clinic.categories[0]?.id || "general",
               fee: newDoc.fee.trim(),
+              gender: newDoc.gender || "male",
+              onlyAvailableInSlot: Boolean(newDoc.onlyAvailableInSlot),
               experience: newDoc.experience.trim(),
-              avatar: newDoc.avatar.trim() || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
+              avatar:
+                newDoc.avatar.trim() ||
+                (newDoc.gender === "female"
+                  ? "https://images.unsplash.com/photo-1594824813593-906560bc9f1c?w=400&q=80"
+                  : "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80"),
               schedule: {
                 days: selectedDays,
                 startTime: startTime,
@@ -348,6 +360,13 @@ export default function ClinicAdminPage() {
         ...newDoc,
         id: "doc-" + Date.now(),
         categoryId: newDoc.categoryId || (clinic.categories[0]?.id || "general"),
+        gender: newDoc.gender || "male",
+        onlyAvailableInSlot: Boolean(newDoc.onlyAvailableInSlot),
+        avatar:
+          newDoc.avatar.trim() ||
+          (newDoc.gender === "female"
+            ? "https://images.unsplash.com/photo-1594824813593-906560bc9f1c?w=400&q=80"
+            : "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80"),
         schedule: {
           days: selectedDays,
           startTime: startTime,
@@ -699,7 +718,14 @@ export default function ClinicAdminPage() {
                         />
                         <div className="min-w-0">
                           <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">{doc.name}</h3>
-                          <p className="text-xs text-amber-700 dark:text-amber-400 font-semibold">{doc.specialization}</p>
+                          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                            <p className="text-xs text-amber-700 dark:text-amber-400 font-semibold">{doc.specialization}</p>
+                            {doc.gender && (
+                              <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-700 capitalize">
+                                {doc.gender}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-[10px] text-stone-500 dark:text-stone-400">{doc.qualification}</p>
                         </div>
                       </div>
@@ -749,6 +775,12 @@ export default function ClinicAdminPage() {
                         <p className="text-xs text-stone-800 dark:text-stone-300 font-medium">
                           {doc.timingDisplay || doc.timing || (doc.schedule ? `${doc.schedule.days.join(", ")} (${formatTime12h(doc.schedule.startTime)} - ${formatTime12h(doc.schedule.endTime)})` : "Not set")}
                         </p>
+                        {doc.onlyAvailableInSlot && (
+                          <span className="inline-flex items-center gap-1 mt-1 text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                            <Clock className="w-3 h-3" />
+                            <span>Strict slot availability active</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1038,16 +1070,71 @@ export default function ClinicAdminPage() {
             </div>
 
             <form onSubmit={handleSaveDoctor} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Doctor Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Dr. Usman Khalid"
-                  value={newDoc.name}
-                  onChange={(e) => setNewDoc({ ...newDoc, name: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Doctor Name *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dr. Usman Khalid"
+                    value={newDoc.name}
+                    onChange={(e) => setNewDoc({ ...newDoc, name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Doctor Gender *</label>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const isDefaultCurrentAvatar =
+                          !newDoc.avatar ||
+                          newDoc.avatar.includes("1622253692010") ||
+                          newDoc.avatar.includes("1594824813593") ||
+                          newDoc.avatar.includes("1559839734");
+                        setNewDoc({
+                          ...newDoc,
+                          gender: "male",
+                          avatar: isDefaultCurrentAvatar
+                            ? "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80"
+                            : newDoc.avatar,
+                        });
+                      }}
+                      className={`py-2 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                        (newDoc.gender || "male") === "male"
+                          ? "bg-amber-500 text-stone-950 shadow-sm shadow-amber-900/20"
+                          : "bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:text-stone-900 dark:hover:text-stone-200"
+                      }`}
+                    >
+                      <span>👨 Male</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const isDefaultCurrentAvatar =
+                          !newDoc.avatar ||
+                          newDoc.avatar.includes("1622253692010") ||
+                          newDoc.avatar.includes("1594824813593") ||
+                          newDoc.avatar.includes("1559839734");
+                        setNewDoc({
+                          ...newDoc,
+                          gender: "female",
+                          avatar: isDefaultCurrentAvatar
+                            ? "https://images.unsplash.com/photo-1594824813593-906560bc9f1c?w=400&q=80"
+                            : newDoc.avatar,
+                        });
+                      }}
+                      className={`py-2 px-2.5 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                        newDoc.gender === "female"
+                          ? "bg-amber-500 text-stone-950 shadow-sm shadow-amber-900/20"
+                          : "bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:text-stone-900 dark:hover:text-stone-200"
+                      }`}
+                    >
+                      <span>👩 Female</span>
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -1179,6 +1266,26 @@ export default function ClinicAdminPage() {
                 {selectedDays.length > 0
                   ? `${selectedDays.join(", ")} (${formatTime12h(startTime)} - ${formatTime12h(endTime)})`
                   : "Please select at least one day"}
+              </div>
+
+              {/* TOGGLE: SHOW UNAVAILABLE OTHER THAN TIME SLOT */}
+              <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-900/90 border border-stone-200 dark:border-stone-800">
+                <label className="flex items-start justify-between gap-3 cursor-pointer">
+                  <div className="select-none">
+                    <span className="font-bold text-stone-900 dark:text-stone-100 block text-xs">
+                      Show unavailable other than time slot
+                    </span>
+                    <span className="text-[11px] text-stone-500 dark:text-stone-400 block mt-0.5 leading-snug">
+                      When checked, the doctor will strictly show as unavailable on the patient storefront outside their consultation day and time slot.
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={newDoc.onlyAvailableInSlot || false}
+                    onChange={(e) => setNewDoc({ ...newDoc, onlyAvailableInSlot: e.target.checked })}
+                    className="w-4 h-4 rounded mt-0.5 text-amber-600 focus:ring-amber-500 border-stone-300 dark:border-stone-700 cursor-pointer shrink-0"
+                  />
+                </label>
               </div>
 
               <div className="flex gap-2 pt-3">

@@ -12,6 +12,8 @@ export interface Doctor {
   categoryId: string;
   experience: string;
   fee: string;
+  gender?: "male" | "female" | string;
+  onlyAvailableInSlot?: boolean; // When true: strictly unavailable outside day & time slot
   schedule?: DoctorSchedule;
   timingDisplay?: string;  // Human-readable: "Mon - Fri (4:00 PM - 9:00 PM)"
   timing?: string;         // Fallback legacy field

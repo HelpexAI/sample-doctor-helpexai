@@ -23,6 +23,8 @@ export const defaultClinicData: ClinicData = {
       categoryId: "dental",
       experience: "12 Years",
       fee: "2500",
+      gender: "male",
+      onlyAvailableInSlot: false,
       schedule: {
         days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
         startTime: "16:00",
@@ -41,6 +43,8 @@ export const defaultClinicData: ClinicData = {
       categoryId: "aesthetics",
       experience: "8 Years",
       fee: "3000",
+      gender: "female",
+      onlyAvailableInSlot: false,
       schedule: {
         days: ["Mon", "Tue", "Wed", "Thu", "Fri"],
         startTime: "14:00",
@@ -59,6 +63,8 @@ export const defaultClinicData: ClinicData = {
       categoryId: "general",
       experience: "14 Years",
       fee: "2000",
+      gender: "male",
+      onlyAvailableInSlot: false,
       schedule: {
         days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
         startTime: "10:00",
@@ -77,6 +83,8 @@ export const defaultClinicData: ClinicData = {
       categoryId: "dental",
       experience: "9 Years",
       fee: "2800",
+      gender: "female",
+      onlyAvailableInSlot: false,
       schedule: {
         days: ["Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
         startTime: "17:00",

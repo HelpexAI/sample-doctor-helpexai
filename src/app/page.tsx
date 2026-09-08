@@ -226,9 +226,16 @@ export default function ClinicStorefront() {
                         className="w-16 h-16 rounded-2xl object-cover border border-stone-200 dark:border-stone-700/80 shrink-0"
                       />
                       <div className="min-w-0">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                          {doc.specialization}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                            {doc.specialization}
+                          </span>
+                          {doc.gender && (
+                            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-700 capitalize">
+                              {doc.gender}
+                            </span>
+                          )}
+                        </div>
                         <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate mt-0.5">
                           {doc.name}
                         </h3>
@@ -266,7 +273,7 @@ export default function ClinicStorefront() {
                   {status.canBook ? (
                     <button
                       onClick={() => handleOpenBooking(doc)}
-                      className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Calendar className="w-4 h-4" />
                       <span>Book Appointment</span>
@@ -274,9 +281,10 @@ export default function ClinicStorefront() {
                   ) : (
                     <button
                       disabled
-                      className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed border border-stone-300 dark:border-stone-700/50"
+                      className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed border border-stone-300 dark:border-stone-700/50 flex items-center justify-center gap-1.5"
                     >
-                      Unavailable (Emergency Off Duty)
+                      <Clock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                      <span>{!doc.isAvailable ? "Unavailable (Emergency Off Duty)" : "Unavailable (Outside Shift Hours)"}</span>
                     </button>
                   )}
                 </div>
