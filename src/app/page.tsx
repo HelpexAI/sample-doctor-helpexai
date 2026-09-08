@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Lock,
   Search,
+  MessageCircle,
 } from "lucide-react";
 import { ClinicData, Doctor } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
@@ -78,6 +79,29 @@ export default function ClinicStorefront() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F5] text-stone-900 dark:bg-[#0C0A09] dark:text-stone-100 selection:bg-amber-600 selection:text-white transition-colors duration-200">
+      {/* Sample Clinic Showcase Top Banner */}
+      <div className="bg-stone-900 text-stone-200 border-b border-stone-800 py-2.5 px-4 text-xs">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+          <p className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-[10px] uppercase tracking-wider">
+              Demo Showcase
+            </span>
+            <span>
+              Sample Clinic &amp; Doctor Appointment Portal by Helpex Solutions — Want a high-speed booking website like this for your clinic?
+            </span>
+          </p>
+          <a
+            href="https://wa.me/923146517960?text=Hi%20Helpex%20Solutions!%20I%20saw%20your%20Clinic%20demo%20and%20want%20to%20build%20a%20website%20for%20my%20clinic."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-600 hover:bg-amber-500 text-stone-950 font-extrabold text-[11px] shadow-sm transition-all whitespace-nowrap"
+          >
+            <span>Build Your Website</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>
+      </div>
+
       {/* 1. Top Emergency / Triage Notice Banner */}
       {clinic.emergencyNotice && (
         <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-b border-amber-200/80 text-amber-900 dark:bg-gradient-to-r dark:from-stone-900 dark:via-amber-950/40 dark:to-stone-900 dark:border-b dark:border-amber-500/20 dark:text-amber-300 py-2.5 px-4 text-center">
@@ -367,6 +391,42 @@ export default function ClinicStorefront() {
           </div>
         </section>
       )}
+
+      {/* Showcase by Helpex Solutions CTA Section */}
+      <section className="py-16 bg-white dark:bg-[#1C1917] border-t border-stone-200 dark:border-stone-800 transition-colors">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Showcase by Helpex Solutions</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight">
+            Ready to streamline your clinic&apos;s patient appointments &amp; consultations?
+          </h2>
+          <p className="mt-3 text-xs sm:text-sm text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
+            Get an ultra-fast, modern clinic website with automated WhatsApp appointment booking, real-time doctor schedule &amp; duty tracking, transparent procedure pricing, and custom cloud sync.
+          </p>
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="https://wa.me/923146517960?text=Hi%20Helpex%20Solutions!%20I%20want%20to%20order%20a%20clinic%20website%20system."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-stone-950 font-black text-xs sm:text-sm shadow-md shadow-amber-900/20 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>Talk with Us on WhatsApp</span>
+            </a>
+            <a
+              href="https://helpexai.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 border border-stone-200 dark:border-stone-700 text-xs sm:text-sm font-bold transition-all cursor-pointer"
+            >
+              <span>Visit Helpex Solutions</span>
+              <ExternalLink className="w-4 h-4 text-stone-400" />
+            </a>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="py-10 border-t border-stone-200 dark:border-stone-800 bg-white dark:bg-[#0C0A09] text-center text-xs text-stone-500 dark:text-stone-400 transition-colors">
