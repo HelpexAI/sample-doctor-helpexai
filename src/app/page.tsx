@@ -30,11 +30,9 @@ export default function ClinicStorefront() {
   // Fetch live clinic data from Cloudflare Worker KV
   useEffect(() => {
     const fetchClinicData = async () => {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-      if (!apiUrl) {
-        setIsLoading(false);
-        return;
-      }
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://helpexai.muhammadarslan0111.workers.dev/api/shop/clinic-islamabad";
 
       try {
         const res = await fetch(`${apiUrl}?_t=${Date.now()}`, {
