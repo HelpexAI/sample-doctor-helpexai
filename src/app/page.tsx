@@ -72,6 +72,10 @@ export default function ClinicStorefront() {
     return matchesCategory && matchesSearch;
   });
 
+  const isSingleDoctor = clinic.doctors.length === 1;
+  const singleDoctor = isSingleDoctor ? clinic.doctors[0] : null;
+  const singleDoctorStatus = singleDoctor ? getDoctorLiveStatus(singleDoctor) : null;
+
   const handleOpenBooking = (doc: Doctor) => {
     if (!doc.isAvailable) return;
     setSelectedDoctor(doc);
@@ -157,18 +161,31 @@ export default function ClinicStorefront() {
       <section className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center relative overflow-hidden">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
           <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-          <span>Verified Medical Specialists</span>
+          <span>{isSingleDoctor ? "Principal Consultant & Specialist" : "Verified Medical Specialists"}</span>
         </div>
 
         <h2 className="text-3xl sm:text-5xl font-black text-stone-900 dark:text-stone-100 tracking-tight leading-tight max-w-3xl mx-auto">
-          Book Specialist Consultations &amp; Treatments on{" "}
-          <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:via-orange-300 dark:to-amber-500 bg-clip-text text-transparent">
-            WhatsApp
-          </span>
+          {isSingleDoctor && singleDoctor ? (
+            <>
+              Consult with {singleDoctor.name} on{" "}
+              <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:via-orange-300 dark:to-amber-500 bg-clip-text text-transparent">
+                WhatsApp
+              </span>
+            </>
+          ) : (
+            <>
+              Book Specialist Consultations &amp; Treatments on{" "}
+              <span className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 dark:from-amber-400 dark:via-orange-300 dark:to-amber-500 bg-clip-text text-transparent">
+                WhatsApp
+              </span>
+            </>
+          )}
         </h2>
 
         <p className="mt-4 text-sm sm:text-base text-stone-600 dark:text-stone-400 max-w-2xl mx-auto">
-          No waiting on hold. Select your consultant, view consultation schedules, and book direct reception confirmation in under 30 seconds.
+          {isSingleDoctor && singleDoctor
+            ? `Direct patient consultations with ${singleDoctor.name} (${singleDoctor.specialization}). Check real-time clinic hours and book directly on WhatsApp.`
+            : "No waiting on hold. Select your consultant, view consultation schedules, and book direct reception confirmation in under 30 seconds."}
         </p>
 
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-stone-500 dark:text-stone-400">
@@ -184,148 +201,347 @@ export default function ClinicStorefront() {
         </div>
       </section>
 
-      {/* 2. Search & Specialty Filter Tabs */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-          {/* Category Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                selectedCategory === "all"
-                  ? "bg-amber-600 text-white shadow-md shadow-amber-600/20 dark:bg-amber-500 dark:text-stone-950 dark:shadow-md dark:shadow-amber-900/40"
-                  : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200 shadow-sm dark:bg-stone-900 dark:text-stone-400 dark:hover:text-stone-100 dark:border-stone-800 dark:shadow-none"
-              }`}
-            >
-              All Specialists ({clinic.doctors.length})
-            </button>
-            {clinic.categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                  selectedCategory === cat.id
-                    ? "bg-amber-600 text-white shadow-md shadow-amber-600/20 dark:bg-amber-500 dark:text-stone-950 dark:shadow-md dark:shadow-amber-900/40"
-                    : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200 shadow-sm dark:bg-stone-900 dark:text-stone-400 dark:hover:text-stone-100 dark:border-stone-800 dark:shadow-none"
-                }`}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
+      {/* CASE A: Single Doctor Dedicated Showcase Section */}
+      {isSingleDoctor && singleDoctor && singleDoctorStatus && (
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="rounded-3xl p-6 sm:p-10 lg:p-12 bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 shadow-xl relative overflow-hidden transition-colors">
+            {/* Ambient Warm Accent Glow */}
+            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/5 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
-          {/* Search Input */}
-          <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search doctor or specialty..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-stone-200 text-xs text-stone-900 placeholder-stone-400 shadow-sm focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 dark:focus:border-amber-500 dark:shadow-none transition-colors"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Doctors Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDoctors.map((doc) => {
-            const status = getDoctorLiveStatus(doc);
-            return (
-              <div
-                key={doc.id}
-                className={`rounded-3xl p-6 transition-all flex flex-col justify-between ${
-                  status.canBook
-                    ? "bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:border-amber-500/40 dark:bg-[#1C1917] dark:border-stone-800 dark:hover:border-amber-500/40 dark:shadow-black/40"
-                    : "bg-stone-100/70 border border-stone-200/60 opacity-75 dark:bg-[#1C1917] dark:border-stone-800/60 dark:opacity-60"
-                }`}
-              >
-                <div>
-                  <div className="flex items-start justify-between gap-3 mb-4">
-                    <div className="flex items-start gap-3.5 min-w-0">
-                      <img
-                        src={doc.avatar}
-                        alt={doc.name}
-                        className="w-16 h-16 rounded-2xl object-cover border border-stone-200 dark:border-stone-700/80 shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                            {doc.specialization}
-                          </span>
-                          {doc.gender && (
-                            <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-700 capitalize">
-                              {doc.gender}
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate mt-0.5">
-                          {doc.name}
-                        </h3>
-                        <p className="text-xs text-stone-500 dark:text-stone-400 font-medium truncate">
-                          {doc.qualification}
-                        </p>
-                      </div>
-                    </div>
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${status.badgeClass}`}
-                    >
-                      {status.badgeText}
-                    </span>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+              {/* Left Column: Portrait & Live Badge */}
+              <div className="lg:col-span-5 flex flex-col items-center text-center">
+                <div className="relative group">
+                  <div className="w-52 h-52 sm:w-64 sm:h-64 rounded-3xl overflow-hidden border-2 border-amber-500/30 dark:border-amber-500/20 shadow-xl bg-stone-100 dark:bg-stone-900 relative">
+                    <img
+                      src={singleDoctor.avatar}
+                      alt={singleDoctor.name}
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
 
-                  <div className="space-y-2 py-3 px-3.5 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-transparent dark:border-stone-800/80 dark:border-y dark:rounded-none dark:px-0 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-stone-500 dark:text-stone-400">Experience:</span>
-                      <span className="font-semibold text-stone-800 dark:text-stone-200">{doc.experience}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-stone-500 dark:text-stone-400">Consultation Fee:</span>
-                      <span className="font-black text-amber-700 dark:text-amber-400">Rs. {doc.fee}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-stone-500 dark:text-stone-400">Timing:</span>
-                      <span className="font-medium text-stone-800 dark:text-stone-200 text-right">
-                        {doc.timingDisplay || doc.timing || (doc.schedule ? `${doc.schedule.days.join(", ")} (${doc.schedule.startTime} - ${doc.schedule.endTime})` : "Schedule not specified")}
-                      </span>
-                    </div>
+                  {/* Status badge overlaid on image */}
+                  <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap shadow-lg">
+                    <span
+                      className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${singleDoctorStatus.badgeClass}`}
+                    >
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          singleDoctorStatus.canBook ? "bg-emerald-500 animate-pulse" : "bg-stone-400"
+                        }`}
+                      />
+                      <span>{singleDoctorStatus.badgeText}</span>
+                    </span>
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  {status.canBook ? (
+                {/* Sub-avatar Trust Badges */}
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+                  {singleDoctor.gender && (
+                    <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700 capitalize">
+                      {singleDoctor.gender} Specialist
+                    </span>
+                  )}
+                  <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                    PMDC Verified
+                  </span>
+                  <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                    {singleDoctor.experience} Practice
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: Complete Details, Schedule & Booking */}
+              <div className="lg:col-span-7 space-y-6">
+                {/* Header info */}
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-extrabold uppercase tracking-wider mb-2">
+                    <span>{singleDoctor.specialization}</span>
+                  </div>
+                  <h3 className="text-2xl sm:text-4xl font-black text-stone-900 dark:text-stone-100 tracking-tight">
+                    {singleDoctor.name}
+                  </h3>
+                  <p className="text-sm sm:text-base font-semibold text-stone-600 dark:text-stone-400 mt-1">
+                    {singleDoctor.qualification}
+                  </p>
+                </div>
+
+                {/* Key Metrics Grid (Fee & Experience) */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-4 p-4 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-stone-900/60 dark:border-stone-800">
+                  <div className="border-r border-stone-200 dark:border-stone-800 pr-3 sm:pr-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                      Consultation Fee
+                    </span>
+                    <span className="text-lg sm:text-2xl font-black text-amber-700 dark:text-amber-400">
+                      Rs. {singleDoctor.fee}
+                    </span>
+                  </div>
+                  <div className="pl-1 sm:pl-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 block">
+                      Experience
+                    </span>
+                    <span className="text-lg sm:text-2xl font-black text-stone-900 dark:text-stone-100">
+                      {singleDoctor.experience}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Structured Schedule & Timings Breakdown */}
+                <div className="p-4 sm:p-5 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-stone-900/60 dark:border-stone-800 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <span>Consultation Hours &amp; Schedule</span>
+                    </span>
+                    <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                      {singleDoctor.timingDisplay ||
+                        singleDoctor.timing ||
+                        (singleDoctor.schedule
+                          ? `${singleDoctor.schedule.startTime} - ${singleDoctor.schedule.endTime}`
+                          : "Consultation by Appointment")}
+                    </span>
+                  </div>
+
+                  {/* Schedule Days visual pills */}
+                  {singleDoctor.schedule?.days && singleDoctor.schedule.days.length > 0 && (
+                    <div className="pt-2.5 border-t border-stone-200/60 dark:border-stone-800/80">
+                      <span className="text-[10px] font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider block mb-2">
+                        Working Days
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => {
+                          const isActive = singleDoctor.schedule?.days.includes(d);
+                          return (
+                            <span
+                              key={d}
+                              className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                                isActive
+                                  ? "bg-amber-600 text-white dark:bg-amber-500 dark:text-stone-950 shadow-sm"
+                                  : "bg-stone-200/60 text-stone-400 dark:bg-stone-800/50 dark:text-stone-600"
+                              }`}
+                            >
+                              {d}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions & WhatsApp Booking */}
+                <div className="pt-2 flex flex-col sm:flex-row gap-3">
+                  {singleDoctorStatus.canBook ? (
                     <button
-                      onClick={() => handleOpenBooking(doc)}
-                      className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                      onClick={() => handleOpenBooking(singleDoctor)}
+                      className="flex-1 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-stone-950 font-black text-sm shadow-lg shadow-amber-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <Calendar className="w-4 h-4" />
-                      <span>Book Appointment</span>
+                      <span>Book Appointment on WhatsApp</span>
                     </button>
                   ) : (
                     <button
                       disabled
-                      className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed border border-stone-300 dark:border-stone-700/50 flex items-center justify-center gap-1.5"
+                      className="flex-1 py-3.5 px-6 rounded-2xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-sm cursor-not-allowed border border-stone-300 dark:border-stone-700/50 flex items-center justify-center gap-2"
                     >
-                      <Clock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
-                      <span>{!doc.isAvailable ? "Unavailable (Emergency Off Duty)" : "Unavailable (Outside Shift Hours)"}</span>
+                      <Clock className="w-4 h-4 text-stone-400 shrink-0" />
+                      <span>
+                        {!singleDoctor.isAvailable
+                          ? "Unavailable (Emergency Off Duty)"
+                          : "Unavailable (Outside Shift Hours)"}
+                      </span>
                     </button>
                   )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
 
-        {filteredDoctors.length === 0 && (
+                  <a
+                    href={`tel:${clinic.hotline}`}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-stone-100 hover:bg-stone-200 text-stone-800 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-200 text-sm font-bold border border-stone-200 dark:border-stone-700 transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span>Call Clinic</span>
+                  </a>
+                </div>
+
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  <span>Instant reception desk appointment slot confirmation via WhatsApp.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CASE B: Multi-Doctor Directory with Filters & Grid (Only when > 1 doctor) */}
+      {!isSingleDoctor && clinic.doctors.length > 1 && (
+        <>
+          {/* 2. Search & Specialty Filter Tabs */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+              {/* Category Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedCategory === "all"
+                      ? "bg-amber-600 text-white shadow-md shadow-amber-600/20 dark:bg-amber-500 dark:text-stone-950 dark:shadow-md dark:shadow-amber-900/40"
+                      : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200 shadow-sm dark:bg-stone-900 dark:text-stone-400 dark:hover:text-stone-100 dark:border-stone-800 dark:shadow-none"
+                  }`}
+                >
+                  All Specialists ({clinic.doctors.length})
+                </button>
+                {clinic.categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                      selectedCategory === cat.id
+                        ? "bg-amber-600 text-white shadow-md shadow-amber-600/20 dark:bg-amber-500 dark:text-stone-950 dark:shadow-md dark:shadow-amber-900/40"
+                        : "bg-white text-stone-600 hover:text-stone-900 border border-stone-200 shadow-sm dark:bg-stone-900 dark:text-stone-400 dark:hover:text-stone-100 dark:border-stone-800 dark:shadow-none"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search Input */}
+              <div className="relative w-full sm:w-72">
+                <Search className="w-4 h-4 text-stone-400 dark:text-stone-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search doctor or specialty..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3.5 py-2.5 rounded-xl bg-white border border-stone-200 text-xs text-stone-900 placeholder-stone-400 shadow-sm focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:placeholder-stone-500 dark:focus:border-amber-500 dark:shadow-none transition-colors"
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* 3. Doctors Grid */}
+          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredDoctors.map((doc) => {
+                const status = getDoctorLiveStatus(doc);
+                return (
+                  <div
+                    key={doc.id}
+                    className={`rounded-3xl p-6 transition-all flex flex-col justify-between ${
+                      status.canBook
+                        ? "bg-white border border-stone-200 shadow-sm hover:shadow-lg hover:border-amber-500/40 dark:bg-[#1C1917] dark:border-stone-800 dark:hover:border-amber-500/40 dark:shadow-black/40"
+                        : "bg-stone-100/70 border border-stone-200/60 opacity-75 dark:bg-[#1C1917] dark:border-stone-800/60 dark:opacity-60"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-3 mb-4">
+                        <div className="flex items-start gap-3.5 min-w-0">
+                          <img
+                            src={doc.avatar}
+                            alt={doc.name}
+                            className="w-16 h-16 rounded-2xl object-cover border border-stone-200 dark:border-stone-700/80 shrink-0"
+                          />
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                                {doc.specialization}
+                              </span>
+                              {doc.gender && (
+                                <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 border border-stone-200 dark:border-stone-700 capitalize">
+                                  {doc.gender}
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 truncate mt-0.5">
+                              {doc.name}
+                            </h3>
+                            <p className="text-xs text-stone-500 dark:text-stone-400 font-medium truncate">
+                              {doc.qualification}
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${status.badgeClass}`}
+                        >
+                          {status.badgeText}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 py-3 px-3.5 rounded-2xl bg-stone-50 border border-stone-100 dark:bg-transparent dark:border-stone-800/80 dark:border-y dark:rounded-none dark:px-0 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="text-stone-500 dark:text-stone-400">Experience:</span>
+                          <span className="font-semibold text-stone-800 dark:text-stone-200">{doc.experience}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-stone-500 dark:text-stone-400">Consultation Fee:</span>
+                          <span className="font-black text-amber-700 dark:text-amber-400">Rs. {doc.fee}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-stone-500 dark:text-stone-400">Timing:</span>
+                          <span className="font-medium text-stone-800 dark:text-stone-200 text-right">
+                            {doc.timingDisplay ||
+                              doc.timing ||
+                              (doc.schedule
+                                ? `${doc.schedule.days.join(", ")} (${doc.schedule.startTime} - ${doc.schedule.endTime})`
+                                : "Schedule not specified")}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      {status.canBook ? (
+                        <button
+                          onClick={() => handleOpenBooking(doc)}
+                          className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <Calendar className="w-4 h-4" />
+                          <span>Book Appointment</span>
+                        </button>
+                      ) : (
+                        <button
+                          disabled
+                          className="w-full py-3 px-4 rounded-xl bg-stone-200 text-stone-500 dark:bg-stone-800 dark:text-stone-500 font-bold text-xs cursor-not-allowed border border-stone-300 dark:border-stone-700/50 flex items-center justify-center gap-1.5"
+                        >
+                          <Clock className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                          <span>
+                            {!doc.isAvailable
+                              ? "Unavailable (Emergency Off Duty)"
+                              : "Unavailable (Outside Shift Hours)"}
+                          </span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {filteredDoctors.length === 0 && (
+              <div className="text-center py-16 bg-white border border-stone-200 rounded-3xl dark:bg-[#1C1917] dark:border-stone-800 shadow-sm">
+                <AlertCircle className="w-10 h-10 text-stone-400 dark:text-stone-600 mx-auto mb-3" />
+                <p className="text-sm font-semibold text-stone-800 dark:text-stone-300">No consultants found</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                  Try selecting another specialty category or clear your search.
+                </p>
+              </div>
+            )}
+          </section>
+        </>
+      )}
+
+      {/* CASE C: Empty Doctors State */}
+      {clinic.doctors.length === 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
           <div className="text-center py-16 bg-white border border-stone-200 rounded-3xl dark:bg-[#1C1917] dark:border-stone-800 shadow-sm">
             <AlertCircle className="w-10 h-10 text-stone-400 dark:text-stone-600 mx-auto mb-3" />
-            <p className="text-sm font-semibold text-stone-800 dark:text-stone-300">No consultants found</p>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">Try selecting another specialty category or clear your search.</p>
+            <p className="text-sm font-semibold text-stone-800 dark:text-stone-300">No consultants listed yet</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+              Check back soon or contact reception for inquiries.
+            </p>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* Clinical Services & Treatments Catalog */}
       {clinic.services && clinic.services.length > 0 && (
