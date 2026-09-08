@@ -9,6 +9,8 @@ export const defaultClinicData: ClinicData = {
   address: "Plaza 42, Sector F-10 Markaz, Islamabad",
   emergencyNotice: "Walk-in Triage & Dental Trauma Care open daily until 11:00 PM",
   consultationFee: "2000",
+  mapEmbedUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3319.4678125439744!2d73.011854!3d33.696803!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbe344d5c9545%3A0x6a2c262d504543b5!2sF-10%20Markaz%20F%2010%20Markaz%20F-10%2C%20Islamabad!5e0!3m2!1sen!2s!4v1710000000000!5m2!1sen!2s",
+  mapDirectionsUrl: "https://www.google.com/maps/search/?api=1&query=Sector+F-10+Markaz+Islamabad",
   categories: [
     { id: "dental", name: "Dental Surgery" },
     { id: "aesthetics", name: "Dermatology & Aesthetics" },

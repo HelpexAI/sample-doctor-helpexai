@@ -15,6 +15,7 @@ import {
   Lock,
   Search,
   MessageCircle,
+  Navigation,
 } from "lucide-react";
 import { ClinicData, Doctor } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
@@ -391,6 +392,169 @@ export default function ClinicStorefront() {
           </div>
         </section>
       )}
+
+      {/* Clinic Branch Location & Interactive Google Maps Embed */}
+      <section id="location" className="py-16 border-t border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#0C0A09] transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <MapPin className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                <span>Branch Location &amp; Directions</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 tracking-tight">
+                Visit Our Clinic
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-400 mt-1">
+                Centrally located with easy parking, walk-in reception, and direct road connectivity.
+              </p>
+            </div>
+
+            <a
+              href={
+                clinic.mapDirectionsUrl ||
+                `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  `${clinic.clinicName} ${clinic.address}`
+                )}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-stone-950 font-black text-xs shadow-md shadow-amber-900/20 transition-all cursor-pointer whitespace-nowrap self-start md:self-auto"
+            >
+              <Navigation className="w-4 h-4" />
+              <span>Get Directions</span>
+              <ExternalLink className="w-3 h-3 ml-0.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            {/* Branch Details Card */}
+            <div className="lg:col-span-1 p-6 sm:p-8 rounded-3xl bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 shadow-sm flex flex-col justify-between space-y-6">
+              <div className="space-y-6">
+                {/* Address block */}
+                <div>
+                  <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider block mb-1">
+                    Clinic Address
+                  </span>
+                  <p className="text-base font-bold text-stone-900 dark:text-stone-100 leading-snug">
+                    {clinic.address}
+                  </p>
+                </div>
+
+                {/* Contact numbers */}
+                <div className="space-y-3 pt-4 border-t border-stone-100 dark:border-stone-800/80">
+                  <div>
+                    <span className="text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block mb-1">
+                      Reception Desk
+                    </span>
+                    <a
+                      href={`tel:${clinic.hotline}`}
+                      className="inline-flex items-center gap-2 text-sm font-bold text-stone-900 hover:text-amber-600 dark:text-stone-100 dark:hover:text-amber-400 transition-colors"
+                    >
+                      <Phone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      <span>{clinic.hotline}</span>
+                    </a>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider block mb-1">
+                      WhatsApp Helpdesk
+                    </span>
+                    <a
+                      href={`https://wa.me/${clinic.whatsappNumber.replace(
+                        /[^0-9]/g,
+                        ""
+                      )}?text=${encodeURIComponent(
+                        `Hi ${clinic.clinicName}, I need directions or help reaching your clinic.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>+{clinic.whatsappNumber}</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Emergency / Walk-in note */}
+                {clinic.emergencyNotice && (
+                  <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200/70 dark:bg-amber-950/20 dark:border-amber-500/20">
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                          Walk-in Notice
+                        </p>
+                        <p className="text-[11px] text-stone-600 dark:text-stone-400 mt-0.5 leading-relaxed">
+                          {clinic.emergencyNotice}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action button */}
+              <div className="pt-4 border-t border-stone-100 dark:border-stone-800/80">
+                <a
+                  href={
+                    clinic.mapDirectionsUrl ||
+                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${clinic.clinicName} ${clinic.address}`
+                    )}`
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700 dark:text-stone-100 border border-stone-700 text-xs font-bold transition-all cursor-pointer"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Open in Google Maps App</span>
+                  <ExternalLink className="w-3 h-3 text-stone-400" />
+                </a>
+              </div>
+            </div>
+
+            {/* Embedded Google Map */}
+            <div className="lg:col-span-2 h-[380px] sm:h-[450px] lg:h-auto min-h-[380px] rounded-3xl overflow-hidden border border-stone-200 dark:border-stone-800 shadow-sm relative bg-stone-100 dark:bg-stone-900">
+              {clinic.mapEmbedUrl ? (
+                <iframe
+                  title={`${clinic.clinicName} Google Maps Location`}
+                  src={clinic.mapEmbedUrl}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen={false}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
+                  <MapPin className="w-10 h-10 text-stone-400 dark:text-stone-600 mb-3" />
+                  <p className="text-sm font-bold text-stone-700 dark:text-stone-300">
+                    Map Location Not Configured
+                  </p>
+                  <p className="text-xs text-stone-500 dark:text-stone-500 mt-1 max-w-sm">
+                    Configure your Google Maps embed code in Staff Admin settings to display the interactive map here.
+                  </p>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      `${clinic.clinicName} ${clinic.address}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-200"
+                  >
+                    <span>Search on Google Maps</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Showcase by Helpex Solutions CTA Section */}
       <section className="py-16 bg-white dark:bg-[#1C1917] border-t border-stone-200 dark:border-stone-800 transition-colors">

@@ -47,4 +47,6 @@ export interface ClinicData {
   categories: DoctorCategory[];
   doctors: Doctor[];
   services: ClinicService[];
+  mapEmbedUrl?: string;
+  mapDirectionsUrl?: string;
 }

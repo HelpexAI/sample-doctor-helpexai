@@ -23,6 +23,11 @@ import {
   ExternalLink,
   ShieldCheck,
   QrCode,
+  MapPin,
+  Navigation,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { ClinicData, Doctor, ClinicService, DoctorCategory } from "@/types/clinic";
 import { defaultClinicData } from "@/data/defaultClinicData";
@@ -31,6 +36,15 @@ import ThemeToggle from "@/components/ThemeToggle";
 import ClinicQRModal from "@/components/admin/ClinicQRModal";
 
 const ALL_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function extractMapEmbedUrl(input: string): string {
+  const trimmed = input.trim();
+  const match = trimmed.match(/<iframe.*?src=["'](.*?)["']/i);
+  if (match && match[1]) {
+    return match[1];
+  }
+  return trimmed;
+}
 
 export default function ClinicAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -47,6 +61,7 @@ export default function ClinicAdminPage() {
   const [clinic, setClinic] = useState<ClinicData>(defaultClinicData);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [showMapGuide, setShowMapGuide] = useState<boolean>(false);
 
   // QR Modal State
   const [isQRModalOpen, setIsQRModalOpen] = useState<boolean>(false);
@@ -1028,6 +1043,156 @@ export default function ClinicAdminPage() {
                   placeholder="e.g., Emergency Triage & Casualty Wing Active 24/7"
                   className="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
                 />
+              </div>
+
+              {/* Google Maps Branch Embed & Directions Settings */}
+              <div className="pt-6 border-t border-stone-200 dark:border-stone-800 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      <MapPin className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                        Google Maps Branch Embed &amp; Directions
+                      </h3>
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                        Display an interactive map on the patient storefront with one-click navigation
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowMapGuide(!showMapGuide)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold transition-colors cursor-pointer self-start sm:self-auto"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                    <span>{showMapGuide ? "Hide Guide" : "How to Get Embed Code"}</span>
+                    {showMapGuide ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                  </button>
+                </div>
+
+                {/* Step-by-Step Guide Accordion */}
+                {showMapGuide && (
+                  <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 dark:bg-amber-950/20 dark:border-amber-500/20 space-y-3 text-stone-800 dark:text-stone-200 animate-in fade-in">
+                    <div className="flex items-center gap-2 text-xs font-bold text-amber-900 dark:text-amber-300">
+                      <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      <span>Step-by-Step Guide: How to Get Your Clinic&apos;s Google Maps Embed</span>
+                    </div>
+
+                    <ol className="text-xs space-y-2 list-decimal list-inside text-stone-700 dark:text-stone-300">
+                      <li className="leading-relaxed">
+                        <span className="font-semibold">Search for your Clinic:</span> Go to{" "}
+                        <a
+                          href="https://maps.google.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-amber-600 dark:text-amber-400 underline font-bold inline-flex items-center gap-0.5"
+                        >
+                          Google Maps <ExternalLink className="w-2.5 h-2.5" />
+                        </a>{" "}
+                        and search for your clinic branch name or address.
+                      </li>
+                      <li className="leading-relaxed">
+                        <span className="font-semibold">Click &ldquo;Share&rdquo;:</span> In the place details card on the left panel, click the{" "}
+                        <span className="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-stone-800 font-mono text-[11px]">Share</span> button.
+                      </li>
+                      <li className="leading-relaxed">
+                        <span className="font-semibold">Switch to &ldquo;Embed a map&rdquo;:</span> In the popup dialog, click the tab labeled{" "}
+                        <span className="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-stone-800 font-mono text-[11px]">Embed a map</span>.
+                      </li>
+                      <li className="leading-relaxed">
+                        <span className="font-semibold">Click &ldquo;COPY HTML&rdquo;:</span> Click the{" "}
+                        <span className="px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900/60 font-semibold text-amber-900 dark:text-amber-200">
+                          COPY HTML
+                        </span>{" "}
+                        button to copy the embed snippet to your clipboard.
+                      </li>
+                      <li className="leading-relaxed">
+                        <span className="font-semibold">Paste Below:</span> Paste the code directly into the field below. Our smart parser will automatically extract the clean embed URL for you!
+                      </li>
+                    </ol>
+                  </div>
+                )}
+
+                {/* Map Embed Input */}
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
+                    Google Maps Embed Code or URL
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={clinic.mapEmbedUrl || ""}
+                    onChange={(e) => {
+                      const extracted = extractMapEmbedUrl(e.target.value);
+                      setClinic({ ...clinic, mapEmbedUrl: extracted });
+                    }}
+                    placeholder="Paste full <iframe ...></iframe> HTML snippet or direct embed link (https://www.google.com/maps/embed?...)"
+                    className="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 font-mono text-xs focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                  />
+                  <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">
+                    Accepts either the full <code className="font-mono">&lt;iframe ...&gt;&lt;/iframe&gt;</code> HTML code from Google Maps or a direct embed URL.
+                  </p>
+                </div>
+
+                {/* Optional Custom Directions URL */}
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
+                    Custom Directions / Navigation Link (Optional)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={clinic.mapDirectionsUrl || ""}
+                      onChange={(e) => setClinic({ ...clinic, mapDirectionsUrl: e.target.value })}
+                      placeholder={`e.g., https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        clinic.address || "Clinic Islamabad"
+                      )}`}
+                      className="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 text-xs focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                    />
+                    {clinic.mapDirectionsUrl && (
+                      <a
+                        href={clinic.mapDirectionsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-semibold flex items-center gap-1 shrink-0"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Test</span>
+                      </a>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">
+                    Leave blank to auto-generate directions using your clinic name &amp; physical address.
+                  </p>
+                </div>
+
+                {/* Live Preview Container */}
+                {clinic.mapEmbedUrl && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                        <span>Live Embed Preview</span>
+                      </span>
+                      <span className="text-[10px] text-stone-500 dark:text-stone-400">
+                        Location: {clinic.address || "Clinic Branch"}
+                      </span>
+                    </div>
+                    <div className="h-52 w-full rounded-2xl overflow-hidden border border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-900">
+                      <iframe
+                        title="Admin Map Preview"
+                        src={clinic.mapEmbedUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-stone-100 dark:border-stone-800">
