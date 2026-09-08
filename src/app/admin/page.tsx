@@ -876,6 +876,16 @@ export default function ClinicAdminPage() {
                       <Clock className="w-3 h-3" /> {srv.duration}
                     </span>
                   </div>
+
+                  <div className="mt-3 pt-2">
+                    <button
+                      onClick={() => handleOpenEditService(srv)}
+                      className="w-full py-2 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/20 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                      <span>Edit Procedure Details</span>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1316,11 +1326,18 @@ export default function ClinicAdminPage() {
       {/* MODAL: ADD / EDIT SERVICE */}
       {isNewServiceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100">
+          <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold">
-                {editingServiceId ? "Edit Clinical Procedure / Service" : "Add Clinical Procedure / Service"}
-              </h3>
+              <div>
+                <h3 className="text-base font-bold">
+                  {editingServiceId ? "Edit Clinical Procedure / Service" : "Add Clinical Procedure / Service"}
+                </h3>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                  {editingServiceId
+                    ? "Update pricing estimate, department, or procedure duration"
+                    : "Add a transparent treatment estimate to the storefront"}
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => {
@@ -1333,9 +1350,9 @@ export default function ClinicAdminPage() {
               </button>
             </div>
 
-            <form onSubmit={handleSaveService} className="space-y-3 text-xs">
+            <form onSubmit={handleSaveService} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Procedure Title *</label>
+                <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Procedure Title *</label>
                 <input
                   type="text"
                   required
@@ -1348,21 +1365,23 @@ export default function ClinicAdminPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-stone-600 dark:text-stone-400 mb-1">Category Tag</label>
-                  <input
-                    type="text"
-                    placeholder="Dental Surgery"
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Department / Category</label>
+                  <select
                     value={newService.category}
                     onChange={(e) => setNewService({ ...newService, category: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
-                  />
+                  >
+                    {clinic.categories.map((c) => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-stone-600 dark:text-stone-400 mb-1">Price Estimate *</label>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Price Estimate *</label>
                   <input
                     type="text"
                     required
-                    placeholder="Rs. 18,000"
+                    placeholder="e.g. Rs. 18,000"
                     value={newService.priceEstimate}
                     onChange={(e) => setNewService({ ...newService, priceEstimate: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
@@ -1371,10 +1390,26 @@ export default function ClinicAdminPage() {
               </div>
 
               <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Duration / Time Required</label>
+                <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Duration / Time Required *</label>
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {["15 Mins", "30 Mins", "45 Mins", "60 Mins", "90 Mins", "Multiple Sessions"].map((dur) => (
+                    <button
+                      key={dur}
+                      type="button"
+                      onClick={() => setNewService({ ...newService, duration: dur })}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                        newService.duration === dur
+                          ? "bg-amber-500 text-stone-950 shadow-sm shadow-amber-900/20"
+                          : "bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-800 hover:text-stone-900"
+                      }`}
+                    >
+                      {dur}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="text"
-                  placeholder="30 Mins"
+                  placeholder="e.g. 30 Mins or 2-3 Visits"
                   value={newService.duration}
                   onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 text-xs"
@@ -1382,10 +1417,10 @@ export default function ClinicAdminPage() {
               </div>
 
               <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Description</label>
+                <label className="block text-stone-600 dark:text-stone-400 mb-1 font-medium">Description / Details</label>
                 <textarea
-                  rows={2}
-                  placeholder="Brief explanation of procedure..."
+                  rows={3}
+                  placeholder="Explain what is included in the treatment, patient requirements, or procedure steps..."
                   value={newService.description}
                   onChange={(e) => setNewService({ ...newService, description: e.target.value })}
                   className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 resize-none"
