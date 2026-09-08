@@ -156,7 +156,7 @@ export default function ClinicAdminPage() {
   };
 
   // --- SAVE TO CLOUDFLARE EDGE KV ---
-  const handleSaveToEdge = async () => {
+  const handleSaveToEdge = async (clinicToSave = clinic) => {
     setIsSaving(true);
     setStatusMessage(null);
 
@@ -167,7 +167,7 @@ export default function ClinicAdminPage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${sessionToken}`,
         },
-        body: JSON.stringify(clinic),
+        body: JSON.stringify(clinicToSave),
       });
 
       const data = await res.json();
@@ -192,12 +192,14 @@ export default function ClinicAdminPage() {
 
   // --- CMS STATE MUTATIONS ---
   const handleToggleDoctorAvailability = (docId: string) => {
-    setClinic((prev) => ({
-      ...prev,
-      doctors: prev.doctors.map((d) =>
+    const updated = {
+      ...clinic,
+      doctors: clinic.doctors.map((d) =>
         d.id === docId ? { ...d, isAvailable: !d.isAvailable } : d
       ),
-    }));
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
   };
 
   const handleDoctorFeeChange = (docId: string, newFee: string) => {
@@ -209,12 +211,18 @@ export default function ClinicAdminPage() {
     }));
   };
 
+  const handleDoctorFeeBlur = () => {
+    handleSaveToEdge(clinic);
+  };
+
   const handleDeleteDoctor = (docId: string) => {
     if (!confirm("Are you sure you want to remove this doctor from the portal?")) return;
-    setClinic((prev) => ({
-      ...prev,
-      doctors: prev.doctors.filter((d) => d.id !== docId),
-    }));
+    const updated = {
+      ...clinic,
+      doctors: clinic.doctors.filter((d) => d.id !== docId),
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
   };
 
   const handleCreateDoctor = (e: React.FormEvent) => {
@@ -243,10 +251,12 @@ export default function ClinicAdminPage() {
       timing: timingString,
       isAvailable: true,
     };
-    setClinic((prev) => ({
-      ...prev,
-      doctors: [createdDoc, ...prev.doctors],
-    }));
+    const updated = {
+      ...clinic,
+      doctors: [createdDoc, ...clinic.doctors],
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
     setIsNewDocModalOpen(false);
     setNewDoc({
       id: "",
@@ -272,19 +282,23 @@ export default function ClinicAdminPage() {
       id: newCategoryName.toLowerCase().replace(/[^a-z0-9]/g, "-"),
       name: newCategoryName.trim(),
     };
-    setClinic((prev) => ({
-      ...prev,
-      categories: [...prev.categories, newCat],
-    }));
+    const updated = {
+      ...clinic,
+      categories: [...clinic.categories, newCat],
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
     setNewCategoryName("");
   };
 
   const handleDeleteCategory = (catId: string) => {
     if (!confirm("Delete category? Doctors in this category will remain, but won't be grouped under it.")) return;
-    setClinic((prev) => ({
-      ...prev,
-      categories: prev.categories.filter((c) => c.id !== catId),
-    }));
+    const updated = {
+      ...clinic,
+      categories: clinic.categories.filter((c) => c.id !== catId),
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
   };
 
   const handleCreateService = (e: React.FormEvent) => {
@@ -298,10 +312,12 @@ export default function ClinicAdminPage() {
       id: "srv-" + Date.now(),
       category: newService.category || (clinic.categories[0]?.name || "Clinical Care"),
     };
-    setClinic((prev) => ({
-      ...prev,
-      services: [...(prev.services || []), createdService],
-    }));
+    const updated = {
+      ...clinic,
+      services: [...(clinic.services || []), createdService],
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
     setIsNewServiceModalOpen(false);
     setNewService({
       id: "",
@@ -315,10 +331,12 @@ export default function ClinicAdminPage() {
 
   const handleDeleteService = (srvId: string) => {
     if (!confirm("Are you sure you want to delete this clinical service?")) return;
-    setClinic((prev) => ({
-      ...prev,
-      services: prev.services.filter((s) => s.id !== srvId),
-    }));
+    const updated = {
+      ...clinic,
+      services: clinic.services.filter((s) => s.id !== srvId),
+    };
+    setClinic(updated);
+    handleSaveToEdge(updated);
   };
 
   // ==========================================
@@ -395,7 +413,7 @@ export default function ClinicAdminPage() {
   // VIEW 2: AUTHENTICATED ADMIN DASHBOARD
   // ==========================================
   return (
-    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 dark:bg-[#0C0A09] dark:text-stone-100 pb-28 transition-colors">
+    <div className="min-h-screen bg-[#FAF8F5] text-stone-900 dark:bg-[#0C0A09] dark:text-stone-100 pb-12 transition-colors">
       {/* 1. Header & Navigation: bg-stone-950/90 border-stone-800 in dark mode */}
       <header className="sticky top-0 z-40 bg-white/90 dark:bg-stone-950/90 backdrop-blur-md border-b border-stone-200 dark:border-stone-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -578,6 +596,7 @@ export default function ClinicAdminPage() {
                             type="text"
                             value={doc.fee}
                             onChange={(e) => handleDoctorFeeChange(doc.id, e.target.value)}
+                            onBlur={handleDoctorFeeBlur}
                             className="w-full pl-10 pr-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 font-bold focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 transition-colors"
                           />
                         </div>
@@ -720,12 +739,22 @@ export default function ClinicAdminPage() {
         {/* TAB 4: CLINIC SETTINGS */}
         {activeTab === "profile" && (
           <div className="max-w-3xl space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">Clinic Details &amp; Emergency Banner</h2>
-              <p className="text-xs text-stone-500 dark:text-stone-400">Update reception contact channels, address, and alert notices</p>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">Clinic Details &amp; Emergency Banner</h2>
+                <p className="text-xs text-stone-500 dark:text-stone-400">Update reception contact channels, address, and alert notices</p>
+              </div>
+              <button
+                onClick={() => handleSaveToEdge()}
+                disabled={isSaving}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:bg-stone-300 text-stone-950 font-extrabold text-xs shadow-md shadow-amber-900/30 transition-all cursor-pointer"
+              >
+                <Save className="w-4 h-4" />
+                <span>{isSaving ? "Saving..." : "Save & Push to Cloudflare"}</span>
+              </button>
             </div>
 
-            <div className="p-6 rounded-3xl bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 shadow-sm space-y-4 text-xs">
+            <div className="p-6 rounded-3xl bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 shadow-sm space-y-5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Clinic Name</label>
@@ -786,33 +815,30 @@ export default function ClinicAdminPage() {
                   type="text"
                   value={clinic.emergencyNotice}
                   onChange={(e) => setClinic({ ...clinic, emergencyNotice: e.target.value })}
+                  placeholder="e.g., Emergency Triage & Casualty Wing Active 24/7"
                   className="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
                 />
+              </div>
+
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-stone-100 dark:border-stone-800">
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Only clicked changes are pushed live to Cloudflare KV.</span>
+                </p>
+                <button
+                  onClick={() => handleSaveToEdge()}
+                  disabled={isSaving}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:bg-stone-300 text-stone-950 font-extrabold text-xs shadow-md shadow-amber-900/30 transition-all cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{isSaving ? "Saving Changes..." : "Save Settings & Push to Cloudflare"}</span>
+                </button>
               </div>
             </div>
           </div>
         )}
 
       </main>
-
-      {/* 3. Sticky Bottom Save Bar: bg-stone-950/95 border-t border-stone-800 */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-stone-950/95 backdrop-blur-md border-t border-stone-200 dark:border-stone-800 p-4 transition-colors">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400">
-            <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <span>All changes are cached locally until published to Cloudflare Edge.</span>
-          </div>
-
-          <button
-            onClick={handleSaveToEdge}
-            disabled={isSaving}
-            className="w-full sm:w-auto ml-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:bg-stone-300 text-stone-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-900/40 transition-all hover:-translate-y-0.5"
-          >
-            <Save className="w-4 h-4" />
-            <span>{isSaving ? "Synchronizing with Cloudflare..." : "Push Changes Live to Cloudflare"}</span>
-          </button>
-        </div>
-      </div>
 
       {/* MODAL: RECEPTION QR STANDEE */}
       <ClinicQRModal
