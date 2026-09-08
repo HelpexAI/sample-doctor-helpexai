@@ -8,6 +8,9 @@ import {
   Save,
   Plus,
   Trash2,
+  Pencil,
+  AlertTriangle,
+  X,
   Stethoscope,
   Building2,
   Layers,
@@ -48,8 +51,9 @@ export default function ClinicAdminPage() {
   // QR Modal State
   const [isQRModalOpen, setIsQRModalOpen] = useState<boolean>(false);
 
-  // Modal State for New Doctor
+  // Modal State for Doctor (Add or Edit)
   const [isNewDocModalOpen, setIsNewDocModalOpen] = useState<boolean>(false);
+  const [editingDoctorId, setEditingDoctorId] = useState<string | null>(null);
   const [selectedDays, setSelectedDays] = useState<string[]>(["Mon", "Tue", "Wed", "Thu", "Fri"]);
   const [startTime, setStartTime] = useState<string>("16:00");
   const [endTime, setEndTime] = useState<string>("21:00");
@@ -73,8 +77,9 @@ export default function ClinicAdminPage() {
     isAvailable: true,
   });
 
-  // Modal State for New Service
+  // Modal State for Service (Add or Edit)
   const [isNewServiceModalOpen, setIsNewServiceModalOpen] = useState<boolean>(false);
+  const [editingServiceId, setEditingServiceId] = useState<string | null>(null);
   const [newService, setNewService] = useState<ClinicService>({
     id: "",
     title: "",
@@ -85,6 +90,14 @@ export default function ClinicAdminPage() {
   });
 
   const [newCategoryName, setNewCategoryName] = useState<string>("");
+
+  // Modal State for Themed Delete Confirmation
+  const [deleteTarget, setDeleteTarget] = useState<{
+    type: "doctor" | "service" | "category";
+    id: string;
+    name: string;
+    details?: string;
+  } | null>(null);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://helpexai.muhammadarslan0111.workers.dev/api/shop/clinic-islamabad";
 
@@ -155,17 +168,22 @@ export default function ClinicAdminPage() {
     setStatusMessage(null);
   };
 
-  // --- SAVE TO CLOUDFLARE EDGE KV ---
+  // --- SAVE TO CLOUDFLARE EDGE KV DIRECTLY ---
   const handleSaveToEdge = async (clinicToSave = clinic) => {
     setIsSaving(true);
     setStatusMessage(null);
+
+    const token =
+      sessionToken ||
+      (typeof window !== "undefined" ? sessionStorage.getItem("helpex_clinic_token") : "") ||
+      "";
 
     try {
       const res = await fetch(`${apiUrl}/save`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(clinicToSave),
       });
@@ -190,74 +208,9 @@ export default function ClinicAdminPage() {
     }
   };
 
-  // --- CMS STATE MUTATIONS ---
-  const handleToggleDoctorAvailability = (docId: string) => {
-    const updated = {
-      ...clinic,
-      doctors: clinic.doctors.map((d) =>
-        d.id === docId ? { ...d, isAvailable: !d.isAvailable } : d
-      ),
-    };
-    setClinic(updated);
-    handleSaveToEdge(updated);
-  };
-
-  const handleDoctorFeeChange = (docId: string, newFee: string) => {
-    setClinic((prev) => ({
-      ...prev,
-      doctors: prev.doctors.map((d) =>
-        d.id === docId ? { ...d, fee: newFee } : d
-      ),
-    }));
-  };
-
-  const handleDoctorFeeBlur = () => {
-    handleSaveToEdge(clinic);
-  };
-
-  const handleDeleteDoctor = (docId: string) => {
-    if (!confirm("Are you sure you want to remove this doctor from the portal?")) return;
-    const updated = {
-      ...clinic,
-      doctors: clinic.doctors.filter((d) => d.id !== docId),
-    };
-    setClinic(updated);
-    handleSaveToEdge(updated);
-  };
-
-  const handleCreateDoctor = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newDoc.name || !newDoc.specialization || !newDoc.fee) {
-      alert("Please fill required fields (Name, Specialization, Fee).");
-      return;
-    }
-    if (selectedDays.length === 0) {
-      alert("Please select at least one consultation day.");
-      return;
-    }
-
-    const timingString = `${selectedDays.join(", ")} (${formatTime12h(startTime)} - ${formatTime12h(endTime)})`;
-
-    const createdDoc: Doctor = {
-      ...newDoc,
-      id: "doc-" + Date.now(),
-      categoryId: newDoc.categoryId || (clinic.categories[0]?.id || "general"),
-      schedule: {
-        days: selectedDays,
-        startTime: startTime,
-        endTime: endTime,
-      },
-      timingDisplay: timingString,
-      timing: timingString,
-      isAvailable: true,
-    };
-    const updated = {
-      ...clinic,
-      doctors: [createdDoc, ...clinic.doctors],
-    };
-    setClinic(updated);
-    handleSaveToEdge(updated);
-    setIsNewDocModalOpen(false);
+  // --- DOCTOR MODAL HELPERS ---
+  const handleOpenAddDoctor = () => {
+    setEditingDoctorId(null);
     setNewDoc({
       id: "",
       name: "",
@@ -273,9 +226,196 @@ export default function ClinicAdminPage() {
     setSelectedDays(["Mon", "Tue", "Wed", "Thu", "Fri"]);
     setStartTime("16:00");
     setEndTime("21:00");
+    setIsNewDocModalOpen(true);
   };
 
-  const handleCreateCategory = (e: React.FormEvent) => {
+  const handleOpenEditDoctor = (doc: Doctor) => {
+    setEditingDoctorId(doc.id);
+    setNewDoc({
+      id: doc.id,
+      name: doc.name,
+      qualification: doc.qualification,
+      specialization: doc.specialization,
+      categoryId: doc.categoryId || clinic.categories[0]?.id || "",
+      experience: doc.experience || "",
+      fee: doc.fee,
+      timing: doc.timing || "",
+      avatar: doc.avatar || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
+      isAvailable: doc.isAvailable,
+    });
+    setSelectedDays(
+      doc.schedule?.days && doc.schedule.days.length > 0
+        ? doc.schedule.days
+        : ["Mon", "Tue", "Wed", "Thu", "Fri"]
+    );
+    setStartTime(doc.schedule?.startTime || "16:00");
+    setEndTime(doc.schedule?.endTime || "21:00");
+    setIsNewDocModalOpen(true);
+  };
+
+  // --- SERVICE MODAL HELPERS ---
+  const handleOpenAddService = () => {
+    setEditingServiceId(null);
+    setNewService({
+      id: "",
+      title: "",
+      category: clinic.categories[0]?.name || "Clinical Care",
+      priceEstimate: "",
+      description: "",
+      duration: "30 Mins",
+    });
+    setIsNewServiceModalOpen(true);
+  };
+
+  const handleOpenEditService = (srv: ClinicService) => {
+    setEditingServiceId(srv.id);
+    setNewService({
+      id: srv.id,
+      title: srv.title,
+      category: srv.category,
+      priceEstimate: srv.priceEstimate,
+      description: srv.description || "",
+      duration: srv.duration || "30 Mins",
+    });
+    setIsNewServiceModalOpen(true);
+  };
+
+  // --- CMS STATE MUTATIONS ---
+  const handleToggleDoctorAvailability = async (docId: string) => {
+    const updated = {
+      ...clinic,
+      doctors: clinic.doctors.map((d) =>
+        d.id === docId ? { ...d, isAvailable: !d.isAvailable } : d
+      ),
+    };
+    setClinic(updated);
+    await handleSaveToEdge(updated);
+  };
+
+  const handleDoctorFeeChange = (docId: string, newFee: string) => {
+    setClinic((prev) => ({
+      ...prev,
+      doctors: prev.doctors.map((d) =>
+        d.id === docId ? { ...d, fee: newFee } : d
+      ),
+    }));
+  };
+
+  const handleDoctorFeeBlur = async () => {
+    await handleSaveToEdge(clinic);
+  };
+
+  // Save Doctor (Create or Edit) directly to Cloudflare
+  const handleSaveDoctor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDoc.name.trim() || !newDoc.specialization.trim() || !newDoc.fee.trim()) {
+      setStatusMessage({ type: "error", text: "Please fill required fields (Name, Specialization, Fee)." });
+      return;
+    }
+    if (selectedDays.length === 0) {
+      setStatusMessage({ type: "error", text: "Please select at least one consultation day." });
+      return;
+    }
+
+    const timingString = `${selectedDays.join(", ")} (${formatTime12h(startTime)} - ${formatTime12h(endTime)})`;
+
+    let updatedDoctors: Doctor[];
+
+    if (editingDoctorId) {
+      updatedDoctors = clinic.doctors.map((d) =>
+        d.id === editingDoctorId
+          ? {
+              ...d,
+              name: newDoc.name.trim(),
+              qualification: newDoc.qualification.trim(),
+              specialization: newDoc.specialization.trim(),
+              categoryId: newDoc.categoryId || clinic.categories[0]?.id || "general",
+              fee: newDoc.fee.trim(),
+              experience: newDoc.experience.trim(),
+              avatar: newDoc.avatar.trim() || "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80",
+              schedule: {
+                days: selectedDays,
+                startTime: startTime,
+                endTime: endTime,
+              },
+              timingDisplay: timingString,
+              timing: timingString,
+            }
+          : d
+      );
+    } else {
+      const createdDoc: Doctor = {
+        ...newDoc,
+        id: "doc-" + Date.now(),
+        categoryId: newDoc.categoryId || (clinic.categories[0]?.id || "general"),
+        schedule: {
+          days: selectedDays,
+          startTime: startTime,
+          endTime: endTime,
+        },
+        timingDisplay: timingString,
+        timing: timingString,
+        isAvailable: true,
+      };
+      updatedDoctors = [createdDoc, ...clinic.doctors];
+    }
+
+    const updated = {
+      ...clinic,
+      doctors: updatedDoctors,
+    };
+
+    setClinic(updated);
+    setIsNewDocModalOpen(false);
+    setEditingDoctorId(null);
+    await handleSaveToEdge(updated);
+  };
+
+  // Save Service (Create or Edit) directly to Cloudflare
+  const handleSaveService = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newService.title.trim() || !newService.priceEstimate.trim()) {
+      setStatusMessage({ type: "error", text: "Please enter service title and price estimate." });
+      return;
+    }
+
+    let updatedServices: ClinicService[];
+
+    if (editingServiceId) {
+      updatedServices = (clinic.services || []).map((s) =>
+        s.id === editingServiceId
+          ? {
+              ...s,
+              title: newService.title.trim(),
+              category: newService.category.trim() || (clinic.categories[0]?.name || "Clinical Care"),
+              priceEstimate: newService.priceEstimate.trim(),
+              description: newService.description.trim(),
+              duration: newService.duration.trim() || "30 Mins",
+            }
+          : s
+      );
+    } else {
+      const createdService: ClinicService = {
+        ...newService,
+        id: "srv-" + Date.now(),
+        category: newService.category.trim() || (clinic.categories[0]?.name || "Clinical Care"),
+      };
+      updatedServices = [...(clinic.services || []), createdService];
+    }
+
+    const updated = {
+      ...clinic,
+      services: updatedServices,
+    };
+
+    setClinic(updated);
+    setIsNewServiceModalOpen(false);
+    setEditingServiceId(null);
+    await handleSaveToEdge(updated);
+  };
+
+  // Add Category directly to Cloudflare
+  const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryName.trim()) return;
     const newCat: DoctorCategory = {
@@ -287,56 +427,41 @@ export default function ClinicAdminPage() {
       categories: [...clinic.categories, newCat],
     };
     setClinic(updated);
-    handleSaveToEdge(updated);
     setNewCategoryName("");
+    await handleSaveToEdge(updated);
   };
 
-  const handleDeleteCategory = (catId: string) => {
-    if (!confirm("Delete category? Doctors in this category will remain, but won't be grouped under it.")) return;
-    const updated = {
-      ...clinic,
-      categories: clinic.categories.filter((c) => c.id !== catId),
-    };
-    setClinic(updated);
-    handleSaveToEdge(updated);
-  };
+  // Delete Category / Doctor / Service directly from Cloudflare via Confirmation Modal
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
 
-  const handleCreateService = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newService.title || !newService.priceEstimate) {
-      alert("Please enter service title and price estimate.");
-      return;
+    let updated: ClinicData = { ...clinic };
+    const targetName = deleteTarget.name;
+
+    if (deleteTarget.type === "doctor") {
+      updated = {
+        ...clinic,
+        doctors: clinic.doctors.filter((d) => d.id !== deleteTarget.id),
+      };
+    } else if (deleteTarget.type === "service") {
+      updated = {
+        ...clinic,
+        services: (clinic.services || []).filter((s) => s.id !== deleteTarget.id),
+      };
+    } else if (deleteTarget.type === "category") {
+      updated = {
+        ...clinic,
+        categories: clinic.categories.filter((c) => c.id !== deleteTarget.id),
+      };
     }
-    const createdService: ClinicService = {
-      ...newService,
-      id: "srv-" + Date.now(),
-      category: newService.category || (clinic.categories[0]?.name || "Clinical Care"),
-    };
-    const updated = {
-      ...clinic,
-      services: [...(clinic.services || []), createdService],
-    };
-    setClinic(updated);
-    handleSaveToEdge(updated);
-    setIsNewServiceModalOpen(false);
-    setNewService({
-      id: "",
-      title: "",
-      category: "",
-      priceEstimate: "",
-      description: "",
-      duration: "30 Mins",
-    });
-  };
 
-  const handleDeleteService = (srvId: string) => {
-    if (!confirm("Are you sure you want to delete this clinical service?")) return;
-    const updated = {
-      ...clinic,
-      services: clinic.services.filter((s) => s.id !== srvId),
-    };
     setClinic(updated);
-    handleSaveToEdge(updated);
+    setDeleteTarget(null);
+    await handleSaveToEdge(updated);
+    setStatusMessage({
+      type: "success",
+      text: `Deleted "${targetName}" directly from Cloudflare Edge!`,
+    });
   };
 
   // ==========================================
@@ -548,8 +673,8 @@ export default function ClinicAdminPage() {
                 <p className="text-xs text-stone-500 dark:text-stone-400">Toggle daily on-duty status or adjust consultation charges</p>
               </div>
               <button
-                onClick={() => setIsNewDocModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all"
+                onClick={handleOpenAddDoctor}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Doctor</span>
@@ -566,7 +691,7 @@ export default function ClinicAdminPage() {
                 >
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-3">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
                         <img
                           src={doc.avatar}
                           alt={doc.name}
@@ -579,12 +704,29 @@ export default function ClinicAdminPage() {
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => handleDeleteDoctor(doc.id)}
-                        className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800 transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => handleOpenEditDoctor(doc)}
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-amber-600 hover:bg-amber-50 dark:text-stone-400 dark:hover:text-amber-400 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                          title="Edit Doctor Profile"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            setDeleteTarget({
+                              type: "doctor",
+                              id: doc.id,
+                              name: doc.name,
+                              details: `${doc.specialization} • ${doc.qualification}`,
+                            })
+                          }
+                          className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                          title="Delete Doctor"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
 
                     <div className="space-y-3 py-3 border-y border-stone-100 dark:border-stone-800/80 text-xs">
@@ -614,7 +756,7 @@ export default function ClinicAdminPage() {
                   <div className="mt-4 pt-2">
                     <button
                       onClick={() => handleToggleDoctorAvailability(doc.id)}
-                      className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                      className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                         doc.isAvailable
                           ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100/80 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30 dark:hover:bg-emerald-500/25"
                           : "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100/80 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30 dark:hover:bg-red-500/25"
@@ -648,8 +790,8 @@ export default function ClinicAdminPage() {
                 <p className="text-xs text-stone-500 dark:text-stone-400">Manage treatment estimates and procedural information</p>
               </div>
               <button
-                onClick={() => setIsNewServiceModalOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all"
+                onClick={handleOpenAddService}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md shadow-amber-900/20 transition-all cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add New Procedure</span>
@@ -667,12 +809,29 @@ export default function ClinicAdminPage() {
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
                         {srv.category}
                       </span>
-                      <button
-                        onClick={() => handleDeleteService(srv.id)}
-                        className="p-1 rounded text-stone-400 hover:text-red-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={() => handleOpenEditService(srv)}
+                          className="p-1 rounded text-stone-400 hover:text-amber-600 hover:bg-amber-50 dark:text-stone-400 dark:hover:text-amber-400 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                          title="Edit Procedure"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() =>
+                            setDeleteTarget({
+                              type: "service",
+                              id: srv.id,
+                              name: srv.title,
+                              details: `${srv.category} • ${srv.priceEstimate}`,
+                            })
+                          }
+                          className="p-1 rounded text-stone-400 hover:text-red-500 hover:bg-red-50 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                          title="Delete Procedure"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">{srv.title}</h3>
@@ -710,10 +869,11 @@ export default function ClinicAdminPage() {
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5"
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:bg-stone-300 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-stone-950 font-bold text-xs shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Category</span>
+                <span>{isSaving ? "Adding..." : "Add Category"}</span>
               </button>
             </form>
 
@@ -725,8 +885,16 @@ export default function ClinicAdminPage() {
                     <span className="text-[10px] text-stone-400 dark:text-stone-500 font-mono">ID: {cat.id}</span>
                   </div>
                   <button
-                    onClick={() => handleDeleteCategory(cat.id)}
-                    className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-stone-100 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800"
+                    onClick={() =>
+                      setDeleteTarget({
+                        type: "category",
+                        id: cat.id,
+                        name: cat.name,
+                        details: "Specialty Department",
+                      })
+                    }
+                    className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 dark:text-stone-400 dark:hover:text-red-400 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                    title="Delete Category"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -849,12 +1017,27 @@ export default function ClinicAdminPage() {
         hotline={clinic.hotline}
       />
 
-      {/* MODAL: ADD DOCTOR */}
+      {/* MODAL: ADD / EDIT DOCTOR */}
       {isNewDocModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm">
-          <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100">
-            <h3 className="text-base font-bold mb-4">Add New Consultant / Doctor</h3>
-            <form onSubmit={handleCreateDoctor} className="space-y-3 text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold">
+                {editingDoctorId ? "Edit Consultant / Doctor" : "Add New Consultant / Doctor"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNewDocModalOpen(false);
+                  setEditingDoctorId(null);
+                }}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveDoctor} className="space-y-3 text-xs">
               <div>
                 <label className="block text-stone-600 dark:text-stone-400 mb-1">Doctor Name *</label>
                 <input
@@ -905,14 +1088,37 @@ export default function ClinicAdminPage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1">Qualifications</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. BDS, FCPS, RDS"
+                    value={newDoc.qualification}
+                    onChange={(e) => setNewDoc({ ...newDoc, qualification: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-stone-600 dark:text-stone-400 mb-1">Experience</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 12+ Years"
+                    value={newDoc.experience || ""}
+                    onChange={(e) => setNewDoc({ ...newDoc, experience: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-stone-600 dark:text-stone-400 mb-1">Qualifications</label>
+                <label className="block text-stone-600 dark:text-stone-400 mb-1">Avatar / Photo URL</label>
                 <input
-                  type="text"
-                  placeholder="e.g. BDS, FCPS, RDS"
-                  value={newDoc.qualification}
-                  onChange={(e) => setNewDoc({ ...newDoc, qualification: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500"
+                  type="url"
+                  placeholder="https://images.unsplash.com/..."
+                  value={newDoc.avatar}
+                  onChange={(e) => setNewDoc({ ...newDoc, avatar: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 text-xs"
                 />
               </div>
 
@@ -928,7 +1134,7 @@ export default function ClinicAdminPage() {
                         key={day}
                         type="button"
                         onClick={() => toggleDay(day)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                           isSelected
                             ? "bg-amber-500 text-stone-950 shadow-sm shadow-amber-900/20"
                             : "bg-stone-100 dark:bg-stone-900 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 border border-stone-200 dark:border-stone-800"
@@ -978,16 +1184,21 @@ export default function ClinicAdminPage() {
               <div className="flex gap-2 pt-3">
                 <button
                   type="button"
-                  onClick={() => setIsNewDocModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 font-bold transition-colors"
+                  onClick={() => {
+                    setIsNewDocModalOpen(false);
+                    setEditingDoctorId(null);
+                  }}
+                  disabled={isSaving}
+                  className="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 font-bold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 font-bold transition-colors"
+                  disabled={isSaving}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:bg-stone-300 text-stone-950 font-bold transition-all shadow-md shadow-amber-900/20 cursor-pointer"
                 >
-                  Save Doctor
+                  {isSaving ? "Publishing..." : editingDoctorId ? "Update & Push to Cloudflare" : "Save & Push to Cloudflare"}
                 </button>
               </div>
             </form>
@@ -995,12 +1206,27 @@ export default function ClinicAdminPage() {
         </div>
       )}
 
-      {/* MODAL: ADD SERVICE */}
+      {/* MODAL: ADD / EDIT SERVICE */}
       {isNewServiceModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100">
-            <h3 className="text-base font-bold mb-4">Add Clinical Procedure / Service</h3>
-            <form onSubmit={handleCreateService} className="space-y-3 text-xs">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold">
+                {editingServiceId ? "Edit Clinical Procedure / Service" : "Add Clinical Procedure / Service"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsNewServiceModalOpen(false);
+                  setEditingServiceId(null);
+                }}
+                className="p-1 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveService} className="space-y-3 text-xs">
               <div>
                 <label className="block text-stone-600 dark:text-stone-400 mb-1">Procedure Title *</label>
                 <input
@@ -1038,6 +1264,17 @@ export default function ClinicAdminPage() {
               </div>
 
               <div>
+                <label className="block text-stone-600 dark:text-stone-400 mb-1">Duration / Time Required</label>
+                <input
+                  type="text"
+                  placeholder="30 Mins"
+                  value={newService.duration}
+                  onChange={(e) => setNewService({ ...newService, duration: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-900 focus:bg-white focus:outline-none focus:border-amber-600 dark:bg-stone-900 dark:border-stone-800 dark:text-stone-100 dark:focus:border-amber-500 text-xs"
+                />
+              </div>
+
+              <div>
                 <label className="block text-stone-600 dark:text-stone-400 mb-1">Description</label>
                 <textarea
                   rows={2}
@@ -1051,19 +1288,94 @@ export default function ClinicAdminPage() {
               <div className="flex gap-2 pt-3">
                 <button
                   type="button"
-                  onClick={() => setIsNewServiceModalOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 font-bold transition-colors"
+                  onClick={() => {
+                    setIsNewServiceModalOpen(false);
+                    setEditingServiceId(null);
+                  }}
+                  disabled={isSaving}
+                  className="flex-1 py-2.5 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 font-bold transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white dark:bg-amber-500 dark:text-stone-950 dark:hover:bg-amber-400 font-bold transition-colors"
+                  disabled={isSaving}
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 disabled:bg-stone-300 text-stone-950 font-bold transition-all shadow-md shadow-amber-900/20 cursor-pointer"
                 >
-                  Save Procedure
+                  {isSaving ? "Publishing..." : editingServiceId ? "Update & Push to Cloudflare" : "Save & Push to Cloudflare"}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: THEMED DELETE CONFIRMATION */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/75 dark:bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-stone-200 dark:bg-[#1C1917] dark:border-stone-800 rounded-3xl w-full max-w-sm sm:max-w-md p-6 shadow-2xl text-stone-900 dark:text-stone-100 relative">
+            <button
+              onClick={() => setDeleteTarget(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-base font-bold text-center text-stone-900 dark:text-stone-100 mb-1">
+              {deleteTarget.type === "doctor"
+                ? "Remove Doctor Profile?"
+                : deleteTarget.type === "service"
+                ? "Remove Clinical Procedure?"
+                : "Remove Specialty Category?"}
+            </h3>
+
+            <p className="text-xs text-stone-500 dark:text-stone-400 text-center mb-4">
+              This will immediately delete this entry from Cloudflare Edge KV and remove it from the patient storefront.
+            </p>
+
+            <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-red-500/10 text-red-700 dark:text-red-400 uppercase tracking-wider">
+                  {deleteTarget.type}
+                </span>
+                <p className="text-xs font-bold text-stone-900 dark:text-stone-100 truncate">{deleteTarget.name}</p>
+              </div>
+              {deleteTarget.details && (
+                <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-1 pl-1">
+                  {deleteTarget.details}
+                </p>
+              )}
+            </div>
+
+            {deleteTarget.type === "category" && (
+              <p className="text-[11px] text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 p-2.5 rounded-xl mb-4">
+                Note: Doctors assigned to this department will not be deleted, but will no longer be grouped under this category.
+              </p>
+            )}
+
+            <div className="flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isSaving}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isSaving}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 disabled:bg-stone-300 text-white font-bold text-xs shadow-md shadow-red-900/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{isSaving ? "Deleting..." : "Delete from Cloudflare"}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
