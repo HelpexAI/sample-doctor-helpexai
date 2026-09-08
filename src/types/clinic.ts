@@ -49,4 +49,5 @@ export interface ClinicData {
   services: ClinicService[];
   mapEmbedUrl?: string;
   mapDirectionsUrl?: string;
+  showMapSection?: boolean;
 }

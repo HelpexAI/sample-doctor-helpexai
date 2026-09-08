@@ -394,7 +394,8 @@ export default function ClinicStorefront() {
       )}
 
       {/* Clinic Branch Location & Interactive Google Maps Embed */}
-      <section id="location" className="py-16 border-t border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#0C0A09] transition-colors">
+      {clinic.showMapSection !== false && (
+        <section id="location" className="py-16 border-t border-stone-200 dark:border-stone-800 bg-[#FAF8F5] dark:bg-[#0C0A09] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
             <div>
@@ -555,6 +556,7 @@ export default function ClinicStorefront() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Showcase by Helpex Solutions CTA Section */}
       <section className="py-16 bg-white dark:bg-[#1C1917] border-t border-stone-200 dark:border-stone-800 transition-colors">

@@ -1073,6 +1073,52 @@ export default function ClinicAdminPage() {
                   </button>
                 </div>
 
+                {/* Visibility Switch */}
+                <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200 dark:bg-stone-900/60 dark:border-stone-800 flex items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                        Show Location &amp; Maps Section on Storefront
+                      </span>
+                      {clinic.showMapSection !== false ? (
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">
+                          Active (Visible)
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-bold text-[10px]">
+                          Hidden
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                      When turned off, the entire Google Maps and branch directions section will be hidden from patients.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={clinic.showMapSection !== false}
+                    onClick={() =>
+                      setClinic({
+                        ...clinic,
+                        showMapSection: clinic.showMapSection === false ? true : false,
+                      })
+                    }
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      clinic.showMapSection !== false
+                        ? "bg-amber-600"
+                        : "bg-stone-300 dark:bg-stone-700"
+                    }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                        clinic.showMapSection !== false ? "translate-x-5" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+
                 {/* Step-by-Step Guide Accordion */}
                 {showMapGuide && (
                   <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 border border-amber-200/80 dark:bg-amber-950/20 dark:border-amber-500/20 space-y-3 text-stone-800 dark:text-stone-200 animate-in fade-in">
